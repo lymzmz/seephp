@@ -1,0 +1,14 @@
+<table>  
+<{for from=$result item=$val}>
+<tr>
+<td><{$val.order_bn}></td><td><{$val.memo}></td>
+</tr> 
+<{done}>
+</table>
+<{lang $aaa.bbb.ccc.1.ddd}><br/>
+<a href="<{url 'base/default/index/id/1/name/mick'}>"><{url 'base/default/index/id/1/name/mick'}></a>
+<br/>
+<{if $result.name.0.age==3}><{$result.0.memo}><{else}>
+<{assign record="abc" data=array('a','b',$record)}>
+<{$data.2}>
+<{fi}>  

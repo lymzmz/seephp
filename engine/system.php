@@ -1,0 +1,124 @@
+<?php
+
+final class see_engine_system {
+
+    static private $_config = null;
+    static private $_request = null;
+    static private $_kvServer = null;
+
+    private function __construct( $config )
+    {
+        //forbid to instance
+    }
+
+    static public function init()
+    {
+        set_error_handler( array(__CLASS__, '_showError') );
+        set_exception_handler( array(__CLASS__, '_showException') );
+        spl_autoload_register( array(__CLASS__, '_autoload') );
+        self::$_config = see_engine_config::load( 'system' );
+        self::$_kvServer = see_engine_kvstore::instance( see_engine_config::load( 'kvstore')->system );
+    }
+
+    static public function booting()
+    {
+        if ( false === see_engine_request::mapper() ) {
+            trigger_error('the guide path error.', E_USER_ERROR);
+
+            exit( E_ERROR );
+        }
+        list($class_name, $method) = see_engine_request::mapper()->guide;
+        if ( !class_exists($class_name) || !in_array($method, get_class_methods($class_name)) ) {
+            trigger_error('the class ['.$class_name.'] is not exists or the method ['.$method.'] is not exists.', E_USER_ERROR);
+
+            exit( E_ERROR );
+        }
+
+        self::launch( see_engine_request::mapper() );
+    }
+
+    static public function launch( $request )
+    {
+        list($class_name, $method) = $request->guide;
+        $controller = new $class_name;
+
+        if ( self::$_config->cache === false || call_user_func( array($controller, 'enableCache') ) === false ) {
+            DEBUG && DEBUG('page: ', 'cache is closed so realtime to get result.'.NEW_LINE.NEW_LINE);
+
+            call_user_func_array( array($controller, $method), $request->get );
+        } else if ( false !== self::$_kvServer->fetch( self::globalKey( $request ), $contents ) ) {
+            DEBUG && DEBUG('page: ', 'cache open and get result from cache.'.NEW_LINE.NEW_LINE);
+
+            echo $contents;
+        } else {
+            DEBUG && DEBUG('page: ', 'cache open but no cache or cache has expired, so realtime to get result.'.NEW_LINE.NEW_LINE);
+
+            ob_start();
+            call_user_func_array( array($controller, $method), $request->get );
+            $contents = ob_get_clean();
+            self::$_kvServer->store( self::_global_key( $request ), $contents );
+            echo $contents;
+        }
+    }
+
+    static private function _autoload( $class_name )
+    {
+        $class = explode('_', $class_name);
+        if ( array_shift($class) !== 'see' ) {
+            trigger_error('please use the name of \'see_\' to set the first name with class \''.$class_name.'\'', E_USER_ERROR);
+
+            exit(E_ERROR);
+        }
+        $sign = array_shift($class);
+        $app = array_shift($class);
+        count($class) && ($file = implode('/', $class));
+
+        $engine = array('see_engine_kernel', 'see_engine_system');
+        if ( $sign == 'engine' ) {
+            $sign = in_array($class_name, $engine) ? 'engine' : 'core';
+        }
+        switch ( $sign ) {
+            case 'ctl': $file = ROOT_DIR.'/application/'.$app.'/controller/'.$file.'.php';break;
+            case 'mdl': $file = ROOT_DIR.'/application/'.$app.'/model/'.$file.'.php';break;
+            case 'bsn': $file = ROOT_DIR.'/application/'.$app.'/business/'.$file.'.php';break;
+            case 'plg': $file = ROOT_DIR.'/application/'.$app.'/plugin/'.$file.'.php';break;
+            case 'core': $file = ROOT_DIR.'/engine/core/'.$app.'.php';break;
+            case 'engine': $file = ROOT_DIR.'/engine/'.$app.'.php';break;
+            default:
+                $file = $sign . '/' . $app . ( $file ? '/'.$file : '' );
+                $file = ROOT_DIR.'/engine/'.$file.'.php';
+                break;
+        }
+        if ( !file_exists($file) ) {
+            //DEBUG && debug_print_backtrace();
+
+            trigger_error('the class file ['.$file.'] is not exists', E_USER_WARNING);
+        } else {
+
+            require $file;
+        }
+    }
+
+    static private function _global_key( $mixed )
+    {
+        return md5(serialize($mixed));
+    }
+
+    static public function _showError( $errno, $errstr, $errfile, $errline )
+    {
+        switch ( $errno ) {
+            case E_ERROR:
+            case E_USER_ERROR:
+                throw new Exception($errstr.' in '.$errfile.' on line:'.$errline.NEW_LINE );break;
+            default: //do something
+        }
+    }
+
+    static public function _showException( $except )
+    {
+        echo NEW_LINE, NEW_LINE, 'Exception:', $except->getMessage(), ' in ', $except->getFile(), '(', $except->getLine(), ')', NEW_LINE;
+
+        exit( E_ERROR );
+    }
+
+}
