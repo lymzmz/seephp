@@ -1,4 +1,7 @@
 <?php
+/**
+ * 当前请求类
+ */
 
 class see_engine_request {
 
@@ -6,6 +9,23 @@ class see_engine_request {
 
     private function __construct(){}
 
+    /**
+     * 当前请求的APP名称
+     *
+     * @return string
+     */
+    static public function app()
+    {
+        return self::mapper()->sys[0];
+    }
+
+    /**
+     * 当前请求的域名（完整域名或只是域名）
+     *
+     * @param bool $full 是否取完整信息
+     *
+     * @return string
+     */
     static public function host( $full=true )
     {
         if ( $full === true ) {
@@ -19,6 +39,15 @@ class see_engine_request {
         return $host;
     }
 
+    /**
+     * 当前请求的参数，返回参数数组对象
+     *
+     * sys=array(0=>app,1=>ctl,2=>act)系统级参数
+     * get=$_GETget提交的参数  post=$_POSTpost提交的参数  cookie=$_COOKIEcookie包含的参数
+     * guide=array(0=>controller,1=>action)导航参数
+     *
+     * @return object
+     */
     static public function mapper()
     {
         if ( empty(self::$_info) ) {
@@ -28,6 +57,14 @@ class see_engine_request {
         return empty(self::$_info) ? false : self::$_info;
     }
 
+    /**
+     * 具体请求解析，sys 系统级参数，get url参数
+     *
+     * @param array|string array(app=>app,ctl=>ctl,act=act,other=>other) or base/default/index/id/1/name/mick
+     * @param bool $is_default 是否是框架默认的分隔字符"/"，不是的话则取系统配置的值
+     *
+     * @return array
+     */
     static public function resolverRequest( $request, $is_default=true )
     {
         if ( !is_array($request) ) {

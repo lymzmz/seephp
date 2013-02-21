@@ -61,7 +61,7 @@ final class see_engine_system {
         }
     }
 
-    static private function _autoload( $class_name )
+    static public function parseClassName( $class_name )
     {
         $class = explode('_', $class_name);
         if ( array_shift($class) !== 'see' ) {
@@ -73,10 +73,17 @@ final class see_engine_system {
         $app = array_shift($class);
         count($class) && ($file = implode('/', $class));
 
+        return array('sign' => $sign, 'app' => $app, 'file' => $file);
+    }
+
+    static private function _autoload( $class_name )
+    {
+        $class = self::parseClassName( $class_name );
+
         $engine = array('see_engine_kernel', 'see_engine_system');
-        if ( $sign == 'engine' ) {
-            $sign = in_array($class_name, $engine) ? 'engine' : 'core';
-        }
+        $sign = $class['sign'] == 'engine' ? ( in_array($class_name, $engine) ? 'engine' : 'core' ) : $class['sign'];
+        $app = $class['app'];
+        $file = empty($class['file']) ? '' : $class['file'];
         switch ( $sign ) {
             case 'ctl': $file = ROOT_DIR.'/application/'.$app.'/controller/'.$file.'.php';break;
             case 'mdl': $file = ROOT_DIR.'/application/'.$app.'/model/'.$file.'.php';break;

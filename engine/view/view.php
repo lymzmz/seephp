@@ -1,13 +1,27 @@
 <?php
+/**
+ * 视图处理
+ */
 
 class see_view_view extends see_view_abstract implements see_view_interface {
 
     private $_config = null;
     private $_assign = array();
+    private $_app = '';
 
     public function __construct( $config=null )
     {
         $this->_config = (object)$config;
+    }
+
+    public function setApp( $app_name_str )
+    {
+        $this->_app = $app_name_str;
+    }
+
+    public function getApp()
+    {
+        return $this->_app;
     }
 
     public function setAssign( $assign_arr )
@@ -17,19 +31,19 @@ class see_view_view extends see_view_abstract implements see_view_interface {
 
     public function display( $file_name_str )
     {
-        list($src_file, $obj_file) = $this->_get_path( $file_name_str );
+        list($src_file, $tpl_file) = $this->_get_path( $file_name_str );
 
         if ( !file_exists($src_file) ) {
             throw new Exception('template file not exists ['.$src_file.'].');
 
             return;
         }
-        if ( !file_exists($obj_file) || filemtime($src_file) > filemtime($obj_file) ) {
+        if ( !file_exists($tpl_file) || filemtime($src_file) > filemtime($tpl_file) ) {
             DEBUG && DEBUG('parse template: ', $src_file);
 
             $this->_parse_template( $file_name_str );
         }
-        $this->_output( $obj_file );
+        $this->_output( $tpl_file );
     }
 
     private function _output( $file_name_str )
@@ -40,25 +54,32 @@ class see_view_view extends see_view_abstract implements see_view_interface {
         require $file_name_str;
     }
 
+    private function _get_path( $file_name )
+    {
+        $src_file = ROOT_DIR . '/application/' . $this->getApp() . '/view/' . $this->_config->template . '/' . $file_name;
+        $tpl_file = ROOT_DIR . '/cache/template/' . $this->getApp() . '_' . $this->_config->template . '_' . str_replace('/', '_', $file_name) . '.php';
+
+        return array($src_file, $tpl_file);
+    }
+
     protected function _plugin( $method, $params )
     {
-        $plugin = see_engine_kernel::singleApp( see_engine_request::mapper()->sys[0] )->plugin( 'view' );
+        $plugin = see_engine_kernel::singleApp( $this->getApp() )->plugin( 'view' );
         $method = 'template_'.$method;
         if ( !$plugin || !method_exists($plugin, $method) ) {
-            $plugin = $this;
+            $plugin = 'see_view_plugin';
         }
-        
+
         return call_user_func( array($plugin, $method), $params );
     }
 
-    private function _parse_template( $file_name )
+    private function _parse_template( $file_name_str )
     {
-        list($src_file, $obj_file) = $this->_get_path( $file_name);
+        list($src_file, $tpl_file) = $this->_get_path( $file_name_str);
         $html = file_get_contents( $src_file );
-
         $pattern = '/\<\{(\w+)?\s*(.*?)\}\>/';
-        $html = preg_replace_callback($pattern, array($this, '_parse_function'), $html);
-        file_put_contents($obj_file, $html, LOCK_EX);
+        $html = preg_replace_callback( $pattern, array( $this, '_parse_function' ), $html );
+        file_put_contents( $tpl_file, $html, LOCK_EX );
     }
 
     /**
@@ -155,7 +176,6 @@ class see_view_view extends see_view_abstract implements see_view_interface {
             case 3: /* (value value value) */
                 $pattern = '/(["\']?)(.*?)\1\s/';
                 preg_match_all($pattern, $arguments_str.' ', $matchs, PREG_SET_ORDER);
-                if ( $arguments_str == '$aaa.bbb.ccc.1.ddd') error_log(var_export($matchs,1),3,'e:/a.log');
                 if ( count($matchs) )
                     foreach ( $matchs as $val )
                         $args[] = $this->_parse_var( $val[1].$val[2].$val[1] );
@@ -188,43 +208,4 @@ class see_view_view extends see_view_abstract implements see_view_interface {
         return $var;
     }
 
-    private function _get_path( $file_name )
-    {
-        $src_file = ROOT_DIR . '/application/' . see_engine_request::mapper()->sys[0] . '/view/' . $this->_config->template . '/' . $file_name;
-        $obj_file = ROOT_DIR . '/cache/template/' . $this->_config->template . '_' . str_replace('/', '_', $file_name) . '.php';
-
-        return array($src_file, $obj_file);
-    }
-
-    public function template_lang( $p_arr )
-    {
-        if ( false === ($return = see_engine_kernel::singleApp( see_engine_request::mapper()->sys[0] )->lang( $p_arr[0], $this->_config->language )) )
-            $return = see_engine_kernel::singleApp( see_engine_config::load( 'application' )->defaultEntry[0] )->lang( $p_arr[0], $this->_config->language );
-
-        return $return ? $return : $p_arr[0];
-    }
-
-    public function template_url( $p_arr )
-    {
-        return see_engine_kernel::url( $p_arr[0] );
-    }
-
 }
-
-/*
-/\<\{(\w+)?(.*?)\}\>/
-
-<{if $data.0.result.0.name==mick}> first /(===|==|!==|!=|<>|<=|>=|<|>)/ second /\./
-<{if $data.0.result.0.name}>
-<{elseif $data.0.result.0.name}>
-<{fi}>
-<{for data=$data.0.result item=row key=key}>
-<{done}>
-<{input type=select options=$data.0.result.0 checked=name}> /(\w+)=(["\']?)(.*?)\2\s/
-<{lang "this is memo"}> /(["\']?)(.*?)\1\s/
-<{date $date "Y-m-d H:i:s"}>
-<{$data.0.result.0.age}>
-<{include header.html}>
-<{assign record="my name is mick" lang=zh-cn template=$template}>
-
-*/

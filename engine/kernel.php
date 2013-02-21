@@ -1,4 +1,7 @@
 <?php
+/**
+ * 核心接口类，客户端调用
+ */
 
 class see_engine_kernel {
 
@@ -80,11 +83,10 @@ class see_engine_kernel {
      */
     static private $_languages = array();
 
-
-    static public function lang( $string, $package=null )
+    static public function lang( $string, $package=null, $app=null )
     {
-        $app = self::_application();
         empty($package) && ( $package = see_engine_config::load( 'application' )->view['language'] );
+        empty($app) && ( $app = see_engine_config::load( 'application' )->defaultEntry[0] );
         if ( !isset(self::$_languages[$app]) ) {
             self::$_languages[$app] = include ROOT_DIR.'/application/'.$app.'/lang/'.$package.'/language.lg';
         }
@@ -93,18 +95,31 @@ class see_engine_kernel {
         return self::$_languages[$app][$string];
     }
 
-    static public function url( $url )
+    static public function config( $name )
+    {
+        if ( empty($name) ) return false;
+
+        return see_engine_config::load( $name );
+    }
+
+    static public function request()
+    {
+        return see_engine_request::mapper();
+    }
+
+    static public function url( $url='' )
     {
         $host = see_engine_request::host( true );
+        $request = $url ? (object)see_engine_request::resolverRequest( $url ) : see_engine_request::mapper();
         if ( see_engine_config::load( 'system' )->url == 'get' ) {
-            $request = see_engine_request::resolverRequest( $url );
-            $url = $host.'?app='.$request['sys'][0].'&ctl='.$request['sys'][1].'&act='.$request['sys'][2];
-            if ( is_array($request['get']) && count($request['get']) )
-                foreach ( $request['get'] as $key => $val )
+            $url = $host.'?app='.$request->sys[0].'&ctl='.$request->sys[1].'&act='.$request->sys[2];
+            if ( is_array($request->get) && count($request->get) )
+                foreach ( $request->get as $key => $val )
                     $url .= '&'.$key.'='.$val;
+        } else {
+            $sep = see_engine_config::load( 'system' )->urlSep;
+            $url = $host . $sep . str_replace('/', $sep, $url);
         }
-        $sep = see_engine_config::load( 'system' )->urlSep;
-        $url = $host . $sep . str_replace('/', $sep, $url);
 
         return $url;
     }
