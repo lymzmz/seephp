@@ -30,14 +30,18 @@ class see_engine_database {
 
     static public function schema( $table_name )
     {
+        static $schema = array();
         if ( false === ($pos = strpos( $table_name, '_' )) ) return false;
 
-        $app = substr( $table_name, 0, $pos );
-        $table_name = substr( $table_name, $pos + 1 );
-        $file_name = ROOT_DIR . '/application/' . $app . '/dbschema/' . $table_name . '.php';
-        $schema = include $file_name;
+        if ( !is_object($schema[$table_name]) ) {
+            $app = substr( $table_name, 0, $pos );
+            $table_name = substr( $table_name, $pos + 1 );
+            $file_name = ROOT_DIR . '/application/' . $app . '/dbschema/' . $table_name . '.php';
+            $s = include $file_name;
+            $schema[$table_name] = (object)$s;
+        }
 
-        return is_array($schema) ? (object)$schema : false;
+        return $schema[$table_name];
     }
 
     static public function record( $model_obj, $record_arr )
@@ -56,10 +60,12 @@ class see_engine_database {
         return self::db()->quote( $string );
     }
 
-    static public function until()
+    static public function builder( $model_obj )
     {
-        $class_name = 'see_db_until';
-        $until = new $class_name;
+        if ( !is_object($model_obj) ) return false;
+
+        $class_name = 'see_db_builder';
+        $until = new $class_name( $model_obj );
 
         return is_object($until) ? $until : false;
     }

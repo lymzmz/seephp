@@ -3,7 +3,7 @@
 class see_db_collection extends see_db_abstract {
 
     private $_model = null;
-    private $_builder = array();
+    private $_builder = null;
     private $_records = array();//只在listall时保存值
     private $_unitWork = array();
     private $_records_object = array();//所有转换过的值都会保存在这里
@@ -65,28 +65,9 @@ class see_db_collection extends see_db_abstract {
 
     public function setBuilder( $columns='*', $filter=null, $order='', $group='', $page=1, $limit=100 )
     {
-        $columns = see_engine_database::until()->resolverColumns( $columns, $this->_model->getTableName() );
-        $filter = see_engine_database::until()->resolverFilter( $filter, $this->_model->getTableName() );
-        $tables = $columns['tables'] + $filter['tables'];
-        $tables = see_engine_database::until()->resolverTables( $tables );
-        $builder =  array(
-                'select' => $columns['select'],
-                'update' => $columns['update'],
-                'tables' => $tables,
-                'filter' => $filter['filter'],
-                'page' => (int)$page,
-                'limit' => (int)$limit,
-                'order' =>  see_engine_database::until()->resolverOrder( $order, $this->_model->getTableName() ),
-                'group' =>  see_engine_database::until()->resolverGroup( $group, $this->_model->getTableName() )
-            );
-        $this->_builder = $builder;
+        $this->_builder = see_engine_database::builder( $this->_model )->resolver( $columns, $filter, $order, $group, $page, $limit );
 
         return $this;
-    }
-
-    public function getBuilder()
-    {
-        return empty($this->_builder) ? false : (object)$this->_builder;
     }
 
     public function callback( $auto_page=false, $function, $type=true )
@@ -96,7 +77,7 @@ class see_db_collection extends see_db_abstract {
             $data = $type ? $data : array($data);
             $return = array_merge( $return, array_map( $function, $data ) );
             if ( $auto_page === true )
-                $this->_builder['page'] ++;
+                $this->_builder->page ++;
             else
                 break;
         }
@@ -106,17 +87,16 @@ class see_db_collection extends see_db_abstract {
 
     public function listAll( $toRecord=false )
     {
-        $b = $this->_builder;
-        $offset = ( $b['page'] - 1 ) * $b['limit'];
-        $this->_records = $this->_model->findList( $b['select'], $b['filter'], $b['tables'], $b['order'], $b['group'], $offset, $b['limit'] );
+        $this->_model->setBuilder( $this->_builder );
+        $this->_records = $this->_model->findList();
 
         return $this->_records;
     }
 
     public function listOne( $toRecord=false )
     {
-        $b = $this->_builder;
-        $result = $this->_model->findOne( $b['select'], $b['filter'], $b['tables'], $b['order'], $b['group'] );
+        $this->_model->setBuilder( $this->_builder );
+        $result = $this->_model->findOne();
 
         return $result;
     }
@@ -124,9 +104,9 @@ class see_db_collection extends see_db_abstract {
     public function add( $record, $realtime=false )
     {
         if ( $realtime === true ) {
-            $result = $this->_model->insert( $record, false );
+            $insert_id = $this->_model->insert( $record, false );
 
-            return $result;
+            return $insert_id;
         } else
             $this->_unitWork['add'][] = $record;
     }
@@ -138,38 +118,32 @@ class see_db_collection extends see_db_abstract {
     public function up( $sets=null, $filter=null )
     {
         if ( $sets ) {
-            if ( is_object($sets) ) {
-                $filter = $filter ? $filter : $sets->toFilter();
-                $sets = $sets->toArray();
-            }
-            $sets = see_engine_database::until()->resolverColumns( $sets, $this->_model->getTableName() );
-            $columns = $sets['update'];
-            $filter = see_engine_database::until()->resolverFilter( $filter, $this->_model->getTableName() );
-            $filter = $filter['filter'];
+            $builder = see_engine_database::builder( $this->_model )->resolver( $sets, $filter );
         } else {
-            $columns = $this->_builder['update'];
-            $filter = $this->_builder['filter'];
+            $builder = $this->_builder;
         }
-        $filter['is_resolver'] = $columns['is_resolver'] = true;
-        $result = $this->_model->update( $columns, $filter );
+        $this->_model->setBuilder( $builder );
+        $result = $this->_model->update();
 
         return $result;
     }
 
     public function del( $filter=null, $realtime=false )
     {
+        if ( $filter ) {
+            $builder = see_engine_database::builder( $this->_model )->resolver( null, $filter );
+            $filter = $builder->filter;
+            unset($builder);
+        } else if ( $this->_builder->filter )
+            $filter = $this->_builder->filter;
+        else
+            $filter = 1;
         if ( $realtime === true ) {
-            $filter = $filter ? see_engine_database::until()->resolverFilter( $filter, $this->_model->getTableName() ) : ( $this->_builder['filter'] ? $this->_builder['filter'] : 1 );
-            $filter['is_resolver'] = true;
             $result = $this->_model->delete( $filter, false );
 
             return $result;
         } else {
-            if ( $filter ) {
-                $filter = see_engine_database::until()->resolverFilter( $filter, $this->_model->getTableName() );
-                $filter = $filter['filter'];
-            }
-            $this->_unitWork['del'][] = $filter ? $filter : ( $this->_builder['filter'] ? $this->_builder['filter'] : 1 );
+            $this->_unitWork['del'][] = $filter;
         }
     }
 

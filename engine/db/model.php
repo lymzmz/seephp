@@ -4,6 +4,7 @@ class see_db_model extends see_db_abstract {
 
     private $_table_name = '';
     private $_dbServer = null;
+    private $_builder = null;
 
     final public function __construct( $params=null, $table_name='' )
     {
@@ -33,6 +34,11 @@ class see_db_model extends see_db_abstract {
         $schema = see_engine_kernel::singleApp( $app )->dbSchema( $table_name );
 
         return $schema;
+    }
+
+    public function setBuilder( $builder_obj )
+    {
+        $this->_builder = $builder_obj;
     }
 
     public function findList( $columns='*', $filter=null, $from=null, $order='', $group='', $offset=0, $limit=100 )
