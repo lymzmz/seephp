@@ -2,6 +2,7 @@
 
 return array(
 
-    '这是备注' => 'this is memo'
+    '这是备注' => 'this is memo',
+    '欢迎%s回来' => 'welcome %s back'
 
 );

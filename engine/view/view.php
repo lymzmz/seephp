@@ -86,12 +86,18 @@ class see_view_view extends see_view_abstract implements see_view_interface {
      * 解析流程控制结构或函数
      *
      * @param array $row_arr array(0=>the matchs string 1=>function name 2=>arguments)
+     * <input type="text" value="<?php echo "aaa"; ?>"/>
      *
      * @return string
      */
     private function _parse_function( $row_arr )
     {
-        switch ( $row_arr[1] ) {
+        if ( ($pos = strpos($row_arr[1], '_')) ) {
+            $function = substr($row_arr[1], 0, $pos);
+            $sign = substr($row_arr[1], $pos + 1);
+        } else
+            $function = $row_arr[1];
+        switch ( $function ) {
             case '':
                 $string = '<?php echo '.$this->_parse_var( $row_arr[2] ).'; ?>';
                 break;
@@ -128,7 +134,10 @@ class see_view_view extends see_view_abstract implements see_view_interface {
                 $string = '<?php } ?>';
                 break;
             case 'input':
-                $string = $this->_parse_template_input( $row_arr[2], 2 );
+                $arguments = $this->_parse_arguments( $row_arr[2], 2 );
+                if ( empty($sign) )
+                    throw new Exception('missing the key \'type\' for function \'input\' in file '.$file_name);
+                $string = see_view_input::resolver( $sign, $arguments );
                 break;
             case 'include':
                 $arguments = $this->_parse_arguments( $row_arr[2], 3 );//单纯value形式
