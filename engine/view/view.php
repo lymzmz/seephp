@@ -19,11 +19,6 @@ class see_view_view extends see_view_abstract implements see_view_interface {
         $this->_app = $app_name_str;
     }
 
-    public function getApp()
-    {
-        return $this->_app;
-    }
-
     public function setAssign( $assign_arr )
     {
         $this->_assign = $assign_arr;
@@ -56,18 +51,21 @@ class see_view_view extends see_view_abstract implements see_view_interface {
 
     private function _get_path( $file_name )
     {
-        $src_file = ROOT_DIR . '/application/' . $this->getApp() . '/view/' . $this->_config->template . '/' . $file_name;
-        $tpl_file = ROOT_DIR . '/cache/template/' . $this->getApp() . '_' . $this->_config->template . '_' . str_replace('/', '_', $file_name) . '.php';
+        $src_file = ROOT_DIR . '/application/' . $this->_app . '/view/' . $this->_config->template . '/' . $file_name;
+        $tpl_file = ROOT_DIR . '/cache/template/' . $this->_app . '_' . $this->_config->template . '_' . str_replace('/', '_', $file_name) . '.php';
 
         return array($src_file, $tpl_file);
     }
 
     protected function _plugin( $method, $params )
     {
-        $plugin = see_engine_kernel::singleApp( $this->getApp() )->plugin( 'view' );
+        $plugin = see_engine_kernel::singleApp( $this->_app )->plugin( 'view' );
         $method = 'template_'.$method;
         if ( !$plugin || !method_exists($plugin, $method) ) {
-            $plugin = 'see_view_plugin';
+            $plugin = see_engine_kernel::singleApp( see_engine_config::app() )->plugin( 'view' );
+            if ( !$plugin || !method_exists($plugin, $method) ) {
+                $plugin = 'see_view_plugin';
+            }
         }
 
         return call_user_func( array($plugin, $method), $params );

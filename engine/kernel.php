@@ -86,7 +86,7 @@ class see_engine_kernel {
     static public function lang( $string, $package=null, $app=null )
     {
         empty($package) && ( $package = see_engine_config::load( 'application' )->view['language'] );
-        empty($app) && ( $app = see_engine_config::load( 'application' )->defaultEntry[0] );
+        empty($app) && ( $app = see_engine_config::app() );
         if ( !isset(self::$_languages[$app]) ) {
             self::$_languages[$app] = include ROOT_DIR.'/application/'.$app.'/lang/'.$package.'/language.lg';
         }
@@ -292,7 +292,7 @@ class see_engine_kernel {
         if ( !isset(self::$_kvServer) ) {
             self::$_kvServer = see_engine_kvstore::instance( see_engine_config::load( 'application' )->kvServer );
         }
-        DEBUG && DEBUG('kernel kvstore get: ', $key);
+        DEBUG && DEBUG('app kvstore get: ', $key);
 
         return self::$_kvServer->fetch( md5($key), $value );
     }
@@ -300,9 +300,9 @@ class see_engine_kernel {
     static public function store( $key, $value )
     {
         if ( !isset(self::$_kvServer) ) {
-            self::$_kvServer = see_engine_database::instance( see_engine_config::load( 'application' )->kvServer );
+            self::$_kvServer = see_engine_kvstore::instance( see_engine_config::load( 'application' )->kvServer );
         }
-        DEBUG && DEBUG('kernel kvstore save: ', $key);
+        DEBUG && DEBUG('app kvstore save: ', $key);
 
         return self::$_kvServer->store( md5($key), $value );
     }
@@ -344,10 +344,10 @@ class see_engine_kernel {
     static private function _application()
     {
         if ( empty(self::$_cur_app) ) {
-            $app = self::$_cur_app = see_engine_config::load( 'application' )->defaultEntry[0];
+            $app = self::$_cur_app = see_engine_config::app();
         } else {
             $app = self::$_cur_app;
-            self::$_cur_app = see_engine_config::load( 'application' )->defaultEntry[0];
+            self::$_cur_app = see_engine_config::app();
         }
 
         return $app;

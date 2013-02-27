@@ -14,14 +14,9 @@ class see_engine_kvstore {
      */
     static public function instance( $config_arr=null )
     {
-        if ( $config_arr ) {
-            $class_name = 'see_kv_' . $config_arr['engine'];
-            $kv = new $class_name( $config_arr );
-        } else {
-            $engine = see_engine_config::load( 'application' )->kvServer;
-            $class_name = 'see_kv_' . $engine;
-            $kv = new $class_name( see_engine_config::load( 'kvstore' ) );
-        }
+        empty($config_arr) && ($config_arr = see_engine_config::load( 'application' )->kvServer);
+        $class_name = 'see_kv_' . $config_arr['engine'];
+        $kv = new $class_name( $config_arr );
 
         return $kv;
     }

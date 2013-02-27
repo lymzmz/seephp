@@ -2,9 +2,11 @@
 
 abstract class see_kv_abstract {
 
-    final public function __construct( $config_arr=array() )
+    private $_config;
+
+    public function __construct( $config_arr=array() )
     {
-        $this->init( $config_arr );
+        $this->_config = $config_arr;
     }
 
 }

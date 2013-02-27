@@ -50,7 +50,7 @@ class see_engine_user {
                 'username' => 'guest', 'password' => '', 'group' => 'guest'
             );
         else
-            $info = see_engine_kernel::singleApp( see_engine_request::app() )->plugin( 'auth' )->info( $user_id );
+            $info = see_engine_kernel::singleApp( see_engine_config::app() )->plugin( 'auth' )->info( $user_id );
 
         return $info;
     }

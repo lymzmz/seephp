@@ -34,7 +34,7 @@ class see_engine_config {
      */
     static public function app()
     {
-        return self::load( 'application' )->defaultEntry[0];
+        return self::load( 'application' )->defaultApp;
     }
 
 }

@@ -17,7 +17,7 @@ final class see_engine_system {
         set_exception_handler( array(__CLASS__, '_showException') );
         spl_autoload_register( array(__CLASS__, '_autoload') );
         self::$_config = see_engine_config::load( 'system' );
-        self::$_kvServer = see_engine_kvstore::instance( see_engine_config::load( 'kvstore')->system );
+        self::$_kvServer = see_engine_kvstore::instance( see_engine_config::load( 'system')->kvServer );
         DEBUG && ob_start();
     }
 

@@ -1,15 +1,22 @@
 <?php
+/**
+ * 应用程序配置选项
+ */
 
 return array(
 
-    'kvServer' => 'secache',
-    'dbServer' => 'mysql',
+    'kvServer' => array( /* KV存储 */
+        'engine' => 'secache',
+        'file' => ROOT_DIR.'/cache/system.db'
+    ),
+    'dbServer' => 'mysql', /* 数据库 */
     'view' => array(
-            'template' => 'default',
-            'language' => 'zh-cn'
+            'template' => 'default', /* 默认模版 */
+            'language' => 'zh-cn' /* 语言包 */
         ),
-    'defaultEntry' => array('base', 'default', 'index'),//app ctl act
-    'loginEntry' => array('base', 'default', 'login'),//app ctl act
-    'auth' => true
+    'defaultEntry' => 'base/default/index', /* 默认入口 */
+    'loginEntry' => 'base/default/login', /* 登入页面 */
+    'auth' => true, /* 是否开启认证，关闭的话所有页面所有人都可以查看 */
+    'defaultApp' => 'base' /* 默认APP，基础服务放在默认APP里面，比如认证，队列，视图插件等 */
 
 );

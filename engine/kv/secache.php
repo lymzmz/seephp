@@ -41,9 +41,10 @@ class see_kv_secache extends see_kv_abstract implements see_kv_interface {
     var $ver = '$Rev: 34670 $';
     var $name = 'secache';
 
-    function init( $config )
+    function __construct( $config )
     {
-        $this->workat( $config['file'] );
+        parent::__construct( $config );
+        $this->workat( $this->_config['file'] );
     }
 
     function workat($file){
