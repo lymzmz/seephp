@@ -17,4 +17,5 @@
 <br/><input type="text" name="<?php echo "jkl"; ?>" value="<?php echo "danshine"; ?>" class="<?php echo "nasdj;f"; ?>" url="<?php echo "lwer3452"; ?>" sldfj="<?php echo "3452345234"; ?>"/>
 <?php $value="aaaaaaaaaaaa bbbbbbbbbbbbbbb ccccccccccccc"; ?>
 <br/><textarea name="<?php echo "mno"; ?>" cols="<?php echo "100"; ?>"><?php echo $value; ?></textarea>
+<?php echo $this->_plugin( 'abcdefg', array("aaaaaaaaaaaaaaaaaaaaaa") ); ?>
 </div>

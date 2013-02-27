@@ -12,9 +12,8 @@ class see_engine_kvstore {
      *
      * @return object
      */
-    static public function instance( $config_arr=null )
+    static public function instance( $config_arr )
     {
-        empty($config_arr) && ($config_arr = see_engine_config::load( 'application' )->kvServer);
         $class_name = 'see_kv_' . $config_arr['engine'];
         $kv = new $class_name( $config_arr );
 
