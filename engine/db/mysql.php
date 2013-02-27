@@ -10,9 +10,6 @@
  * $db->closeCache()->find( $sql ); //completely closed cache, and it not to touch also
  * $db->openCache()->find $sql ); //open the cached
  *
- * @author ymz <lymz.86@gmail.com>
- * @since 2013-1-30 06:47:13
- * @version 1.0.0
  */
 
 class see_db_mysql extends see_db_mysqlBase {

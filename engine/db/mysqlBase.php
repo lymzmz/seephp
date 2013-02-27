@@ -1,11 +1,4 @@
 <?php
-/**
- * mysql class
- *
- * @author ymz <lymz.86@gmail.com>
- * @since 2013-1-30 06:47:13
- * @version 1.0.0
- */
 
 class see_db_mysqlBase {
 
@@ -43,7 +36,7 @@ class see_db_mysqlBase {
         } catch ( Exception $e ) {
             trigger_error($e->getMessage(), E_USER_ERROR);
         }
-//die($sql);
+
         if ( false === ( $resource = mysql_query($sql, $this->_handle) ) ) {
             trigger_error(mysql_error($this->_handle).$sql, DEBUG ? E_USER_ERROR : E_USER_WARNING);
 
