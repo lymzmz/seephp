@@ -1,7 +1,7 @@
 <div style="border:1px red solid;height:100px;width:100px;">
 <?php echo $this->_plugin( 'lang', array("这是备注") ); ?><br/>
-<?php echo $this->_plugin( 'lang', array("欢迎mick回来") ); ?><br/>
-<?php echo $this->_plugin( 'url', array("member/login/active/user/mick") ); ?>
+<?php echo $this->_plugin( 'lang', array("欢迎回来") ); ?><?php echo $username; ?>a<br/>
+<a href="<?php echo $this->_plugin( 'url', array("base/default/logout") ); ?>"><?php echo $this->_plugin( 'url', array("base/default/logout") ); ?></a>
 <?php $record=array('a','b','c','d','e'); ?>
 <br/><select name="<?php echo "abc"; ?>" class="<?php echo "abc"; ?>" vab="<?php echo "nishishei"; ?>"><?php foreach ( $record as $key=>$val ) {
             echo '<option value="'.$key.'">'.$val.'</option>';

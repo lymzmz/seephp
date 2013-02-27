@@ -2,10 +2,37 @@
 
 class see_ctl_base_default extends see_app_controller {
 
-    public $_is_cache = true;
+    function login()
+    {
+        $this->pagedata['error'] = see_engine_kernel::request()->cookie['error'];
+        setCookie('error', null);
+        $this->display('login.html');
+    }
+
+    function logout()
+    {
+        if ( see_engine_kernel::auth()->logout() )
+            $this->redirect( see_engine_request::index() );
+        else
+            $this->error('登出失败');
+    }
+
+    function dologin( $backto='' )
+    {
+        $result = see_engine_kernel::auth()->login( see_engine_kernel::request()->post['username'], see_engine_kernel::request()->post['password'] );
+        if ( $result === true ) {
+
+            $this->redirect( $backto ? $backto : see_engine_request::index() );
+        } else {
+            setCookie('error', 'login failed');//echo '<pre>';print_r($_COOKIE);exit;
+            $this->redirect( see_engine_request::login() );
+        }
+    }
 
     function index( $id, $name )
     {
+        $user = see_engine_kernel::user();
+        $this->pagedata['username'] = $user->username.'#'.$name;
         $data = array(
                     'member_id' => 1,
                     'order_bn' => mt_rand(0,9).'aaaaaaaaaaaaaa',

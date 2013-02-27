@@ -10,6 +10,26 @@ class see_engine_request {
     private function __construct(){}
 
     /**
+     * 登陆页地址
+     *
+     * @return string
+     */
+    static public function login()
+    {
+        return self::url( see_engine_config::load( 'application' )->loginEntry );
+    }
+
+    /**
+     * 默认页地址
+     *
+     * @return string
+     */
+    static public function index()
+    {
+        return self::url( see_engine_config::load( 'application' )->defaultEntry );
+    }
+
+    /**
      * 当前请求的APP名称
      *
      * @return string
@@ -94,6 +114,16 @@ class see_engine_request {
         return $info;
     }
 
+    /**
+     * array(
+     *      sys => array(app, ctl, act),
+     *      get => array(id=>1, name=>mick)
+     *      post => array(id=>1, name=>mick)
+     *      guide => array(ctl, act)
+     *  )
+     *
+     * @access private
+     */
     static private function _mapper()
     {
         $request = count($_GET) ? $_GET : $_SERVER['PATH_INFO'];
@@ -104,12 +134,37 @@ class see_engine_request {
             self::$_info = self::resolverRequest( $request, false );
         }
 
-        self::$_info['post'] = $_POST;
         self::$_info['cookie'] = $_COOKIE;
+        self::$_info['post'] = $_POST;
         self::$_info['guide'][] = 'see_ctl_' . self::$_info['sys'][0] . '_' . self::$_info['sys'][1];//class name
         self::$_info['guide'][] = self::$_info['sys'][2];//method name
         unset($_GET, $_POST, $_COOKIE);
         self::$_info = (object)self::$_info;
+    }
+
+    /**
+     * 组织URL方法
+     *
+     * @param mixed string|array base/default/index | array(base,default,index)
+     *
+     * @return string
+     */
+    static public function url( $url='' )
+    {
+        $host = self::host( true );
+        $url = $url ? ( is_array($url) ? implode('/', $url) : $url ) : '';
+        $request = $url ? (object)self::resolverRequest( $url ) : self::mapper();
+        if ( see_engine_config::load( 'system' )->url == 'get' ) {
+            $url = $host.'?app='.$request->sys[0].'&ctl='.$request->sys[1].'&act='.$request->sys[2];
+            if ( is_array($request->get) && count($request->get) )
+                foreach ( $request->get as $key => $val )
+                    $url .= '&'.$key.'='.$val;
+        } else {
+            $sep = see_engine_config::load( 'system' )->urlSep;
+            $url = $host . $sep . str_replace('/', $sep, $url);
+        }
+
+        return $url;
     }
 
 }

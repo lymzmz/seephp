@@ -18,6 +18,7 @@ final class see_engine_system {
         spl_autoload_register( array(__CLASS__, '_autoload') );
         self::$_config = see_engine_config::load( 'system' );
         self::$_kvServer = see_engine_kvstore::instance( see_engine_config::load( 'kvstore')->system );
+        DEBUG && ob_start();
     }
 
     static public function booting()
@@ -42,11 +43,34 @@ final class see_engine_system {
         list($class_name, $method) = $request->guide;
         $controller = new $class_name;
 
-        if ( self::$_config->cache === false || call_user_func( array($controller, 'enableCache') ) === false ) {
+        if ( see_engine_config::load( 'application' )->auth === true ) {
+            if ( false !== ($groupIds = call_user_func( array($controller, 'authGroup') )) ) {
+                $user = see_engine_user::instance( $request->cookie['U'] );
+                if ( !in_array('guest', $groupIds) && $user->verifyAccount( $request->cookie['T'] ) === false ) {
+                    call_user_func( array($controller, 'redirect'), see_engine_request::login() );
+
+                    exit();
+                }
+                if ( $user->verifyGroup( $groupIds ) === false ) {
+                    call_user_func( array($controller, 'error'), 'your group can\'t access this page' );
+
+                    exit();
+                }
+            } else {
+                call_user_func( array($controller, 'redirect'), see_engine_request::index() );
+
+                exit();
+            }
+        }
+
+        if ( self::$_config->cache === false
+            || call_user_func( array($controller, 'enableCache') ) === false
+            || !empty($request->post) ) {//todo 缓存开关可以具体到某个action
+
             DEBUG && DEBUG('page: ', 'cache is closed so realtime to get result.'.NEW_LINE.NEW_LINE);
 
             call_user_func_array( array($controller, $method), $request->get );
-        } else if ( false !== self::$_kvServer->fetch( self::globalKey( $request ), $contents ) ) {
+        } else if ( false !== self::$_kvServer->fetch( self::_page_cache_global_key( $request ), $contents ) ) {
             DEBUG && DEBUG('page: ', 'cache open and get result from cache.'.NEW_LINE.NEW_LINE);
 
             echo $contents;
@@ -56,7 +80,7 @@ final class see_engine_system {
             ob_start();
             call_user_func_array( array($controller, $method), $request->get );
             $contents = ob_get_clean();
-            self::$_kvServer->store( self::_global_key( $request ), $contents );
+            !DEBUG && self::$_kvServer->store( self::_page_cache_global_key( $request ), $contents );
             echo $contents;
         }
     }
@@ -106,9 +130,11 @@ final class see_engine_system {
         }
     }
 
-    static private function _global_key( $mixed )
+    static private function _page_cache_global_key( $request_obj )
     {
-        return md5(serialize($mixed));
+        $ident = serialize($request_obj->guide).serialize($request_obj->get);
+
+        return md5( $ident );
     }
 
     static public function _showError( $errno, $errstr, $errfile, $errline )

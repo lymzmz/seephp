@@ -103,6 +103,21 @@ class see_engine_kernel {
         return self::$_languages[$app][$string];
     }
 
+    static public function user( $user_id=null, $group_id=null )
+    {
+        $user_id = empty($user_id) ? see_engine_request::mapper()->cookie['U'] : $user_id;
+
+        return see_engine_user::instance( $user_id );
+    }
+
+    static public function auth()
+    {
+        static $_auth = null;
+        if ( is_null($_auth) ) $_auth = new see_engine_user;
+
+        return $_auth;
+    }
+
     static public function config( $name )
     {
         if ( empty($name) ) return false;
@@ -117,19 +132,7 @@ class see_engine_kernel {
 
     static public function url( $url='' )
     {
-        $host = see_engine_request::host( true );
-        $request = $url ? (object)see_engine_request::resolverRequest( $url ) : see_engine_request::mapper();
-        if ( see_engine_config::load( 'system' )->url == 'get' ) {
-            $url = $host.'?app='.$request->sys[0].'&ctl='.$request->sys[1].'&act='.$request->sys[2];
-            if ( is_array($request->get) && count($request->get) )
-                foreach ( $request->get as $key => $val )
-                    $url .= '&'.$key.'='.$val;
-        } else {
-            $sep = see_engine_config::load( 'system' )->urlSep;
-            $url = $host . $sep . str_replace('/', $sep, $url);
-        }
-
-        return $url;
+        return see_engine_request::url( $url );
     }
 
     static public function view( $config=null )

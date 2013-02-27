@@ -1,7 +1,7 @@
 <div style="border:1px red solid;height:100px;width:100px;">
 <{lang "这是备注"}><br/>
-<{lang "欢迎mick回来"}><br/>
-<{url "member/login/active/user/mick"}>
+<{lang "欢迎回来"}><{$username}>a<br/>
+<a href="<{url "base/default/logout"}>"><{url "base/default/logout"}></a>
 <{assign $record=array('a','b','c','d','e') }>
 <br/><{input_select name="abc" options=$record class="abc" vab="nishishei"}>
 <br/><{input_radio name="def" options=$record checked="1"}>

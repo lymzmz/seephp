@@ -49,8 +49,20 @@ class see_view_input {
 
     static private function _parse_text( $params_arr )
     {
-        $html = '<input type="text" name="<?php echo '.$params_arr['name'].'; ?>" value="<?php echo '.$params_arr['value'].'; ?>"';
-        unset($params_arr['name'], $params_arr['value']);
+        $html = '<input type="text" name="<?php echo '.$params_arr['name'].'; ?>"';
+        unset($params_arr['name']);
+        foreach ( $params_arr as $key => $val) {
+            $html .= ' '.$key.'="<?php echo '.$val.'; ?>"';
+        }
+        $html .= '/>';
+
+        return $html;
+    }
+
+    static private function _parse_password( $params_arr )
+    {
+        $html = '<input type="password" name="<?php echo '.$params_arr['name'].'; ?>"';
+        unset($params_arr['name']);
         foreach ( $params_arr as $key => $val) {
             $html .= ' '.$key.'="<?php echo '.$val.'; ?>"';
         }
