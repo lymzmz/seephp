@@ -22,6 +22,7 @@ return array(
         'engine' => 'redis',
         'host' => 'localhost',
         'port' => 2218
-    )
+    ),
+    'fileServer' => 'http://localhost/seephp' /* 留空则取本机地址 */
 
 );

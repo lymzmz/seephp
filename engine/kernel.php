@@ -86,18 +86,16 @@ class see_engine_kernel {
     static public function lang( $string, $package=null, $app=null )
     {
         empty($package) && ( $package = see_engine_config::load( 'application' )->view['language'] );
-        empty($app) && ( $app = see_engine_config::app() );
+        empty($app) && ( $app = see_engine_request::app() );
         if ( !isset(self::$_languages[$app]) ) {
             self::$_languages[$app] = include ROOT_DIR.'/application/'.$app.'/lang/'.$package.'/language.lg';
         }
         if ( !isset(self::$_languages[$app][$string]) ) {
-            /*foreach ( self::$_languages[$app] as $key => $val ) {
-                $key = str_replace('%s', '(.*?)', $key);
-                $val = str_replace('%', '(.*?)', $val);
-                if ( preg_match( $key, $string, $match ) )
-                    $string = preg_replace($val, 
-            }*///todo 语言包模糊匹配
-            return false;
+            $app = see_engine_config::app();
+            if ( !isset(self::$_languages[$app]) ) {
+                self::$_languages[$app] = include ROOT_DIR.'/application/'.$app.'/lang/'.$package.'/language.lg';
+            }
+            if ( !isset(self::$_languages[$app][$string]) ) return false;
         }
 
         return self::$_languages[$app][$string];

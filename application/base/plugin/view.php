@@ -2,12 +2,12 @@
 
 class see_plg_base_view extends see_app_plugin {
 
-    public function template_langaa( $data )
+    public function parse_langaa( $data )
     {
         echo $data;
     }
 
-    public function template_abcdefg( $data )
+    public function parse_abcdefg( $data )
     {
         return 'bbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccccc';
     }

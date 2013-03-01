@@ -40,21 +40,18 @@ class see_engine_request {
     }
 
     /**
-     * 当前请求的域名（完整域名或只是域名）
+     * 当前请求的域名
      *
-     * @param bool $full 是否取完整信息
+     * @param bool $full 是否取完整信息(带不带入口文件地址)
      *
      * @return string
      */
     static public function host( $full=true )
     {
-        if ( $full === true ) {
-            $host = substr($_SERVER['SERVER_PROTOCOL'], 0, 5) == 'HTTPS' ? 'https://' : 'http://';
-            $host .= $_SERVER['SERVER_NAME'];
-            $host .= ( $_SERVER['SERVER_PORT'] == 80 || $_SERVER['SERVER_PORT'] == 443 ) ? '' : ':'.$_SERVER['SERVER_PORT'];
-            $host .= $_SERVER['SCRIPT_NAME'];
-        } else
-            $host = $_SERVER['SERVER_NAME'];
+        $host = substr($_SERVER['SERVER_PROTOCOL'], 0, 5) == 'HTTPS' ? 'https://' : 'http://';
+        $host .= $_SERVER['SERVER_NAME'];
+        $host .= ( $_SERVER['SERVER_PORT'] == 80 || $_SERVER['SERVER_PORT'] == 443 ) ? '' : ':'.$_SERVER['SERVER_PORT'];
+        $host .= ( $full === true ? $_SERVER['SCRIPT_NAME'] : dirname($_SERVER['SCRIPT_NAME']) );
 
         return $host;
     }

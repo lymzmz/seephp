@@ -57,20 +57,6 @@ class see_view_view extends see_view_abstract implements see_view_interface {
         return array($src_file, $tpl_file);
     }
 
-    protected function _plugin( $method, $params )
-    {
-        $plugin = see_engine_kernel::singleApp( $this->_app )->plugin( 'view' );
-        $method = 'template_'.$method;
-        if ( !$plugin || !method_exists($plugin, $method) ) {
-            $plugin = see_engine_kernel::singleApp( see_engine_config::app() )->plugin( 'view' );
-            if ( !$plugin || !method_exists($plugin, $method) ) {
-                $plugin = 'see_view_plugin';
-            }
-        }
-
-        return call_user_func( array($plugin, $method), $params );
-    }
-
     private function _parse_template( $file_name_str )
     {
         list($src_file, $tpl_file) = $this->_get_path( $file_name_str);
@@ -149,8 +135,8 @@ class see_view_view extends see_view_abstract implements see_view_interface {
                 $string = '<?php '.implode(' ', $str).' ?>';
                 break;
             default:
-                $arguments = $this->_parse_arguments( $row_arr[2], 3 );
-                $string = '<?php echo $this->_plugin( \''.$row_arr[1].'\', array('.implode(',', $arguments).') ); ?>';
+                $arguments = $this->_parse_arguments( $row_arr[2], 2 );
+                $string = $this->_parse_plugin( $row_arr[1], $arguments );
         }
 
         return $string;
@@ -213,6 +199,23 @@ class see_view_view extends see_view_abstract implements see_view_interface {
         }
 
         return $var;
+    }
+
+    protected function _parse_plugin( $method, $params )
+    {
+        $class_name = array(
+                see_engine_kernel::singleApp( $this->_app )->plugin( 'view' ),
+                see_engine_kernel::singleApp( see_engine_config::app() )->plugin( 'view' ),
+                'see_view_parse'
+            );
+        $method = 'parse_'.$method;
+        foreach ( $class_name as $class ) {
+            if ( !method_exists( $class, $method ) ) continue;
+
+            return call_user_func( array($class, $method), $params );
+        }
+
+        return 'unknow function \''.$method.'\'';
     }
 
 }

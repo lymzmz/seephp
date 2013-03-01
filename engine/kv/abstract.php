@@ -2,7 +2,7 @@
 
 abstract class see_kv_abstract {
 
-    private $_config;
+    protected $_config;
 
     public function __construct( $config_arr=array() )
     {
