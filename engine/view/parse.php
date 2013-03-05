@@ -35,7 +35,7 @@ class see_view_parse {
 
     static public function parse_img( $params )
     {
-        $host = see_engine_config::load( 'application' )->fileServer;
+        $host = see_engine_config::load( 'application' )->staticsServer;
         $host = $host ? $host : see_engine_request::host( false );
         $file = $host.'/statics/images/<?php echo ' . $params['data'] . '; ?>';
         $html = '<img src="' . $file . '"';

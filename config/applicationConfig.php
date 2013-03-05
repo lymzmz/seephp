@@ -23,6 +23,6 @@ return array(
         'host' => 'localhost',
         'port' => 2218
     ),
-    'fileServer' => 'http://localhost/seephp' /* 留空则取本机地址 */
+    'staticsServer' => 'http://localhost/seephp' /* 留空则取本机地址 */
 
 );
