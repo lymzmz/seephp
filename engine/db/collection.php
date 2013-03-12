@@ -87,16 +87,14 @@ class see_db_collection extends see_db_abstract {
 
     public function listAll( $toRecord=false )
     {
-        $this->_model->setBuilder( $this->_builder );
-        $this->_records = $this->_model->findList();
+        $this->_records = $this->_model->setBuilder( $this->_builder )->findList();
 
         return $this->_records;
     }
 
     public function listOne( $toRecord=false )
     {
-        $this->_model->setBuilder( $this->_builder );
-        $result = $this->_model->findOne();
+        $result = $this->_model->setBuilder( $this->_builder )->findOne();
 
         return $result;
     }
@@ -115,20 +113,19 @@ class see_db_collection extends see_db_abstract {
      * @param mixed $sets string(key1=val1,key2=val2)|array(array(key1=>val1,key2=>val2))|object(db_record)
      * @param mixed $filter string(key1=val1,key2>val2)|array(array(key1|bthan=>val1))|object(db_record)
      */
-    public function up( $sets=null, $filter=null )
+/*    public function up( $sets=null, $filter=null )
     {
         if ( $sets ) {
             $builder = see_engine_database::builder( $this->_model )->resolver( $sets, $filter );
         } else {
             $builder = $this->_builder;
         }
-        $this->_model->setBuilder( $builder );
-        $result = $this->_model->update();
+        $result = $this->_model->setBuilder( $builder )->update();
 
         return $result;
-    }
+    }*/
 
-    public function del( $filter=null, $realtime=false )
+/*    public function del( $filter=null, $realtime=false )
     {
         if ( $filter ) {
             $builder = see_engine_database::builder( $this->_model )->resolver( null, $filter );
@@ -145,7 +142,7 @@ class see_db_collection extends see_db_abstract {
         } else {
             $this->_unitWork['del'][] = $filter;
         }
-    }
+    }*/
 
     private function _global_key( $mixed )
     {

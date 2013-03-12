@@ -39,27 +39,34 @@ class see_db_model extends see_db_abstract {
     public function setBuilder( $builder_obj )
     {
         $this->_builder = $builder_obj;
+
+        return $this;
     }
 
-    public function findList( $columns='*', $filter=null, $from=null, $order='', $group='', $offset=0, $limit=100 )
-    {//todo 如何防止两次做resolver collection一次 model二次
-        //$columns = database::until()->resolverColumns( $columns );
-        $columns = implode(',', $columns);
+    public function findList( $columns='*', $filter=null, $from=null, $order='', $group='', $offset=0, $limit=-1 )
+    {
+        if ( is_object($this->_builder) ) {
+            $columns = implode(',', $this->_builder->select);
+            $from = implode(',', $this->_builder->tables);
+            $filter = implode(' and ', $this->_builder->filter);
+            $group = $this->_builder->group;
+            $order = $this->_builder->order;
+            $limit = $this->_builder->limit;
+            $offset = ($this->_builder->page - 1) * $this->_builder->limit;
+            $this->_builder = null;
+        }
         $sql = 'select ' . $columns;
-        //$tables = database::until()->resolverTables( $from );
         $sql .= ' from ' . $from;
-        $filter = implode(' and ', $filter);
-        $sql .= ' where '.$filter;//database::until()->resolverFilter( $filter );
+        $sql .= ' where '. ( $filter ? $filter : '1' );
         $sql .= $group ? ' group by '.$group : '';
         $sql .= $order ? ' order by '.$order : '';
-        $sql .= ' limit '.$offset.','.$limit;
+        $sql .= $limit > 0 ? ' limit '.$offset.','.$limit : '';
 
         return $this->_dbServer->select( $sql );
     }
 
     public function findOne( $columns='*', $filter=null, $from=null, $order='', $group='' )
     {
-        $sql .= ' limit 1,1';
         $record = $this->findList( $columns, $filter, $from, $order, $group, 0, 1 );
         if ( empty($record) ) return false;
 
@@ -80,15 +87,14 @@ class see_db_model extends see_db_abstract {
     public function delete( $filter=null, $many=false )
     {
         $many === false && ($filter = array($filter));
-        if ( !is_array($filter) || !isset($filter['is_resolver']) || !$filter['is_resolver'] ) {
+        if ( $many ) {
+            $builder = see_engine_database::builder( $this );
             foreach ( $filter as $val ) {
-                $fil = see_engine_database::until()->resolverFilter( $val );
-                $fil = implode(' and ', $fil['filter']);
-                $where[] = $fil;
+                $fil = $builder->resolver( null, $val );
+                $where[] = implode(' and ', $fil->filter);
             }
         } else {
-            unset($filter['is_resolver']);
-            foreach ( $filter as $val ) $where[] = implode(' and ', $val);
+            $where[] = see_engine_database::builder( $this )->resolver( null, $filter );
         }
         $sql = 'delete from '.$this->getTableName().' where (' . implode(' or ', $where) . ')';
         $result = $this->_dbServer->exec( $sql );
@@ -133,21 +139,14 @@ class see_db_model extends see_db_abstract {
     public function update( $columns, $filter=null )
     {
         $sql = 'update '.$this->getTableName().' set ';
-        if ( !is_array($columns) || !isset($columns['is_resolver']) || !$columns['is_resolver'] ) {
-            $columns = see_engine_database::until()->resolverColumns( $columns, $this->getTableName() );
-            if ( !($columns = $columns['update']) || empty($columns) ) return false;
-        } else
-            unset($columns['is_resolver']);
+        $builder = see_engine_database::builder( $this )->resolver( $columns, $filter );
+        if ( !($columns = $builder->update) || empty($columns) ) return false;
 
-        foreach ( $columns as $key => $val ) {
+        foreach ( $builder->update as $key => $val ) {
             $columns_value[] = $key . '=' . see_engine_database::quote( $val );
         }
         $sql .= implode(',', $columns_value);
-        if ( !is_array($filter) || !isset($filter['is_resolver']) || !$filter['is_resolver'] ) {
-            $filter = see_engine_database::until()->resolverFilter( $filter, $this->getTableName() );
-            $filter = $filter['filter'];
-        }
-        $sql .= ' where ' . implode(' and ', $filter);
+        $sql .= ' where ' . implode(' and ', $builder->filter);
         $result = $this->_dbServer->exec( $sql );
 
         return $result;
