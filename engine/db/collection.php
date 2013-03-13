@@ -73,7 +73,7 @@ class see_db_collection extends see_db_abstract {
     public function callback( $auto_page=false, $function, $type=true )
     {
         $return = array();
-        while ( ($data  = $this->listing()) ) {
+        while ( ($data  = $this->listAll()) ) {
             $data = $type ? $data : array($data);
             $return = array_merge( $return, array_map( $function, $data ) );
             if ( $auto_page === true )
