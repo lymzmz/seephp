@@ -1,5 +1,6 @@
 <?php
 
+header('Content-type:text/html;charset=utf8');
 define('DEBUG', false);
 define('NEW_LINE', empty($_SERVER['HTTP_HOST']) && $_SERVER['argc'] ? PHP_EOL : '<br/>');
 define('ROOT_DIR', realpath(dirname(__FILE__)));

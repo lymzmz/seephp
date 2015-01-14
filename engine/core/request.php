@@ -12,21 +12,27 @@ class see_engine_request {
     /**
      * 登陆页地址
      *
+     * @param bool $full 是否取完整信息(带不带入口文件地址)
+     *
      * @return string
      */
-    static public function login()
+    static public function login( $full=true )
     {
-        return self::url( see_engine_config::load( 'application' )->loginEntry );
+        $uri = see_engine_config::load( 'application' )->loginEntry;
+        return $full === true ? self::url( $uri ) : $uri;
     }
 
     /**
      * 默认页地址
      *
+     * @param bool $full 是否取完整信息(带不带入口文件地址)
+     *
      * @return string
      */
-    static public function index()
+    static public function index( $full=true )
     {
-        return self::url( see_engine_config::load( 'application' )->defaultEntry );
+        $uri = see_engine_config::load( 'application' )->defaultEntry;
+        return $full === true ? self::url( $uri ) : $uri;
     }
 
     /**
@@ -57,6 +63,28 @@ class see_engine_request {
     }
 
     /**
+     * 当前请求的信息
+     *
+     * @return string
+     */
+    static public function uri()
+    {
+        return implode(see_engine_config::load( 'system' )->urlSep, self::mapper()->sys);
+    }
+
+    /**
+     * 设置cookie
+     *
+     * @param string $key 名称
+     * @param string $value 值
+     *
+     */
+    static public function cookie($key, $value, $expire=0, $path='/', $domain=null, $secure=null)
+    {
+        setCookie($key, $value, $expire, $path, $domain, $secure);
+    }
+
+    /**
      * 当前请求的参数，返回参数数组对象
      *
      * sys=array(0=>app,1=>ctl,2=>act)系统级参数
@@ -84,6 +112,7 @@ class see_engine_request {
      */
     static public function resolverRequest( $request, $is_default=true )
     {
+        $info['get'] = array();
         if ( !is_array($request) ) {
             $url_sep = $is_default === false ? see_engine_config::load( 'system' )->urlSep : '/';
             if ( substr($request, 0, 1) == $url_sep ) $request = substr($request, 1);
@@ -126,7 +155,7 @@ class see_engine_request {
         $request = count($_GET) ? $_GET : $_SERVER['PATH_INFO'];
         if ( empty($request) ) {
             $request = see_engine_config::load( 'application' )->defaultEntry;
-            self::$_info = self::resolverRequest( implode('/', $request), true );
+            self::$_info = self::resolverRequest( $request, true );
         } else {
             self::$_info = self::resolverRequest( $request, false );
         }

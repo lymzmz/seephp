@@ -27,8 +27,8 @@ class see_engine_user {
         if ( $info['username'] == $user_id && $info['password'] == md5($password) ) {
             $cookie = md5($info['username']).'.'.md5($info['group']).'.'.md5($info['password']);
             $expire = time() + ( 60 * 60 * 24 * 7 );
-            setCookie('T', $cookie, $expire, '/', '', false, true);
-            setCookie('U', $info['username'], time() + ( 60 * 60 * 24 * 30 ), '/', '', false, false);
+            see_engine_request::cookie('T', $cookie, $expire, '/', '', false, true);
+            see_engine_request::cookie('U', $info['username'], time() + ( 60 * 60 * 24 * 30 ), '/', '', false, false);
 
             return true;
         } else
@@ -38,7 +38,7 @@ class see_engine_user {
 
     static public function logout( $force=false )
     {
-        setCookie('T', null, 0, '/', '', false, true);
+        see_engine_request::cookie('T', null, 0, '/', '', false, true);
 
         return true;
     }

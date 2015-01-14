@@ -2,11 +2,32 @@
 
 class see_ctl_base_default extends see_app_controller {
 
+/* ------------------------------------- */
+    /**
+     * 登录后才可访问网站所有内容
+     */
+    function authGroup() {
+        return array('member');
+    }
+/* ------------------------------------- */
+
     function login()
     {
-        $this->pagedata['error'] = see_engine_kernel::request()->cookie['error'];
-        setCookie('error', null);
-        $this->display('login.html');
+        $data = see_engine_kernel::request()->post;
+        if ( empty($data) ) {
+            $this->pagedata['error'] = see_engine_kernel::request()->cookie['error'];
+            see_engine_request::cookie('error', null);
+            $this->display('login.html');
+        } else {
+            $result = see_engine_kernel::auth()->login( $data['username'], $data['password'] );
+            if ( $result === true ) {
+
+                $this->redirect( $backto ? $backto : see_engine_request::index() );
+            } else {
+                see_engine_request::cookie('error', '用户名或密码错误');
+                $this->redirect( see_engine_request::login() );
+            }
+        }
     }
 
     function logout()
@@ -15,18 +36,6 @@ class see_ctl_base_default extends see_app_controller {
             $this->redirect( see_engine_request::index() );
         else
             $this->error('登出失败');
-    }
-
-    function dologin( $backto='' )
-    {
-        $result = see_engine_kernel::auth()->login( see_engine_kernel::request()->post['username'], see_engine_kernel::request()->post['password'] );
-        if ( $result === true ) {
-
-            $this->redirect( $backto ? $backto : see_engine_request::index() );
-        } else {
-            setCookie('error', 'login failed');//echo '<pre>';print_r($_COOKIE);exit;
-            $this->redirect( see_engine_request::login() );
-        }
     }
 
     function index( $id, $name )

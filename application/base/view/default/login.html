@@ -1,6 +1,27 @@
-<div><{$error}></div>
-<form action="<{url data="base/default/dologin"}>" method="post">
-<{input_text name="username"}><br/>
-<{input_text name="password"}><br/>
-<input type="submit" value="submit"/>
-</form> 
+<{include "header.html"}>
+<div class="container table-bordered" style="margin-top:3%;padding:2% 0px;border-color:#2D6CA2;border-radius:10px;border-width:2px;">
+	<div class="col-sm-12">
+		<form action="<{url data="base/default/login"}>" method="post" class="form-horizontal" role="form">
+		<fieldset>
+			<div class="form-group">
+				<label class="col-sm-4 control-label">用户名: </label>
+				<div class="col-sm-4"><{input_text name="username" class="form-control" placeholder="用户名/Email"}></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-4 control-label">密码: </label>
+				<div class="col-sm-4"><{input_text name="password" class="form-control" placeholder="密码"}></div>
+			</div>
+			<br/>
+			<div class="form-group">
+				<div class="col-sm-6 control-label" style="color:red"><{$error}></div>
+				<div class="col-sm-4">
+					<input type="submit" value="注册" class="btn btn-info"/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<input type="submit" value="登录" class="btn btn-primary"/>
+				</div>
+			</div>
+		</fieldset>
+		</form>
+	</div>
+</div>
+<{include "footer.html"}>

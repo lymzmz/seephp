@@ -43,7 +43,7 @@ final class see_engine_system {
         list($class_name, $method) = $request->guide;
         $controller = new $class_name;
 
-        if ( see_engine_config::load( 'application' )->auth === true ) {
+        if ( see_engine_request::login(false) != see_engine_request::uri() && see_engine_config::load( 'application' )->auth === true ) {
             if ( false !== ($groupIds = call_user_func( array($controller, 'authGroup') )) ) {
                 $user = see_engine_user::instance( $request->cookie['U'] );
                 if ( !in_array('guest', $groupIds) && $user->verifyAccount( $request->cookie['T'] ) === false ) {
