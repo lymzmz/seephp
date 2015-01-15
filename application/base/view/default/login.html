@@ -1,7 +1,7 @@
 <{include "header.html"}>
 <div class="container table-bordered" style="margin-top:3%;padding:2% 0px;border-color:#2D6CA2;border-radius:10px;border-width:2px;">
 	<div class="col-sm-12">
-		<form action="<{url data="base/default/login"}>" method="post" class="form-horizontal" role="form">
+		<form action="<{url 'base/default/login'}>" method="post" class="form-horizontal" role="form" callback="login">
 		<fieldset>
 			<div class="form-group">
 				<label class="col-sm-4 control-label">用户名: </label>
@@ -13,9 +13,9 @@
 			</div>
 			<br/>
 			<div class="form-group">
-				<div class="col-sm-6 control-label" style="color:red"><{$error}></div>
+				<div class="col-sm-6 control-label" style="color:red"></div>
 				<div class="col-sm-4">
-					<input type="submit" value="注册" class="btn btn-info"/>
+					<input type="button" value="注册" class="btn btn-info"/>
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					<input type="submit" value="登录" class="btn btn-primary"/>
 				</div>
@@ -24,4 +24,20 @@
 		</form>
 	</div>
 </div>
+<div id="message" class="alert alert-warning">
+<{if $error}><{$error}><{else}>ok<{fi}>
+</div>
+<script>
+var login = function(re){
+	if(re.status==1) {
+		$.get(re.url, function(re2){
+		//	$('body').fadeOut().delay(250).fadeIn();
+			$('body').html(re2);
+		});
+	} else {
+		$('#message').html(re.info);
+		$('#message').animate({top:"25%"}, 250).delay(2000).animate({top:"-50px"}, 250);
+	}
+}
+</script>
 <{include "footer.html"}>

@@ -1,0 +1,60 @@
+<{include "header.html"}>
+<style type="text/css">
+th { font-size:16px; font-weight:bold;text-align:center; }
+.goods_num { cursor:pointer; margin:0 5px; }
+.goods_name { cursor:pointer; }
+.cate_name { font-size:16px; font-weight:bold; cursor:pointer; }
+.green { background-color:#DFF0D8; }
+.goods { line-height:42px; width:110%;overflow:hidden;position:relative; }
+</style>
+
+
+
+
+<table class="table table-bordered">
+	<tr class="warning">
+		<th class="col-xs-1">类别</th><th class="col-xs-1">名称</th><th class="col-xs-6">数量</th><th class="col-xs-2">购买日期</th><th class="col-xs-2">保质期</th>
+	</tr>
+</table>
+<{for from=$lists key=$key item=$val}>
+<{assign $height=count($val)*42}>
+<div>
+	<div class="col-xs-1 cate_name" row_num=<{count $val}> style="height:<{$height}>px;line-height:<{$height}>px;padding:0"><{$key}></div>
+	<div class="col-xs-11" style="padding:0;">
+	<{for from=$val key=$k item=$v}>
+	<div style="overflow:hidden">
+		<div class="goods <{if $k%2!=0}>green<{fi}>" goods_id="<{$v.goods_id}>">
+			<div class="goods_name col-xs-1"><{$v.name}></div>
+			<div class="goods_num col-xs-6">
+				<{assign $nums=array_fill(0,$v['nums'],1)}>
+				<{for from=$nums item=$vv}><span class="glyphicon glyphicon-pushpin"></span><{done}>
+			</div>
+			<div class="buy_time col-xs-2"><{date 'Y-m-d' $v.buy_time}></div>
+			<div class="col-xs-2"><{date 'Y-m-d' $v.end_time}></div>
+			<div style="width:50px;float:left;">aaaaa</div>
+		</div>
+	</div>
+	<{done}>
+	</div>
+</div>
+<{done}>
+<{include "footer.html"}>
+<script>
+$('.goods_num').bind('click', function(){
+	$(this).children(':first').remove();
+});
+$('.goods_name').bind('click', function(){
+	var goods = $('<span class="glyphicon glyphicon-pushpin"></span>');
+	$(this).next().append(goods);
+});
+$('.cate_name').bind('click', function(){
+	var row_num = parseInt($(this).attr('row_num'))+1;
+	$(this).css('height', row_num*42);
+	$(this).css('line-height', row_num*42);
+	var html = '<div class="goods col-sm-11 '+(row_num%2==0?'green':'')+'" goods_id="0"><div class="goods_name col-sm-1"></div><div class="col-sm-6"></div><div class="buy_time col-sm-2"><{date 'Y-m-d'}></div><div class="col-sm-2"></div></div>';
+	$(this).next().prepend(html);
+});
+$('.buy_time').bind('click', function(){
+	$(this).parent().animate({left:"-100"}, 100);
+});
+</script>

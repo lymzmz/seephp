@@ -15,17 +15,17 @@ class see_ctl_base_default extends see_app_controller {
     {
         $data = see_engine_kernel::request()->post;
         if ( empty($data) ) {
-            $this->pagedata['error'] = see_engine_kernel::request()->cookie['error'];
-            see_engine_request::cookie('error', null);
+            //$this->pagedata['error'] = see_engine_kernel::request()->cookie['error'];
+            //see_engine_request::cookie('error', null);
             $this->display('login.html');
         } else {
             $result = see_engine_kernel::auth()->login( $data['username'], $data['password'] );
-            if ( $result === true ) {
+            if ( 1||$result === true ) {
 
-                $this->redirect( $backto ? $backto : see_engine_request::index() );
+                $this->succ('登陆成功', 'base/default/lists');
             } else {
-                see_engine_request::cookie('error', '用户名或密码错误');
-                $this->redirect( see_engine_request::login() );
+                //see_engine_request::cookie('error', '用户名或密码错误');
+                $this->fail( '用户名或密码错误', see_engine_request::login() );
             }
         }
     }
@@ -36,6 +36,89 @@ class see_ctl_base_default extends see_app_controller {
             $this->redirect( see_engine_request::index() );
         else
             $this->error('登出失败');
+    }
+
+    function lists()
+    {
+        $data = array(
+            '瓜果蔬菜' => array(
+            array(
+                'goods_id' => 1,
+                'name' => '西红柿',
+                'nums' => 5,
+                'buy_time' => strtotime('2015-1-5'),
+                'end_time' => strtotime('2015-1-25'),
+                'cate_id' => 1,
+            ),
+            array(
+                'goods_id' => 2,
+                'name' => '鸡蛋',
+                'nums' => 20,
+                'buy_time' => strtotime('2015-1-5'),
+                'end_time' => strtotime('2015-1-25'),
+                'cate_id' => 1,
+            ),
+            array(
+                'goods_id' => 3,
+                'name' => '西葫芦',
+                'nums' => 5,
+                'buy_time' => strtotime('2015-1-5'),
+                'end_time' => strtotime('2015-1-25'),
+                'cate_id' => 1,
+            ),
+            array(
+                'name' => '黄瓜',
+                'nums' => 5,
+                'buy_time' => strtotime('2015-1-5'),
+                'end_time' => strtotime('2015-1-25'),
+                'cate_id' => 1,
+            ),
+            array(
+                'name' => '茄子',
+                'nums' => 5,
+                'buy_time' => strtotime('2015-1-5'),
+                'end_time' => strtotime('2015-1-25'),
+                'cate_id' => 1,
+            ),
+            array(
+                'name' => '苹果',
+                'nums' => 5,
+                'buy_time' => strtotime('2015-1-5'),
+                'end_time' => strtotime('2015-1-25'),
+                'cate_id' => 1,
+            ),
+            array(
+                'name' => '鸭梨',
+                'nums' => 5,
+                'buy_time' => strtotime('2015-1-5'),
+                'end_time' => strtotime('2015-1-25'),
+                'cate_id' => 1,
+            ),
+            array(
+                'name' => '橙子',
+                'nums' => 5,
+                'buy_time' => strtotime('2015-1-5'),
+                'end_time' => strtotime('2015-1-25'),
+                'cate_id' => 1,
+            ),
+            array(
+                'name' => '橘子',
+                'nums' => 5,
+                'buy_time' => strtotime('2015-1-5'),
+                'end_time' => strtotime('2015-1-25'),
+                'cate_id' => 1,
+            ),
+            array(
+                'name' => '芹菜',
+                'nums' => 5,
+                'buy_time' => strtotime('2015-1-5'),
+                'end_time' => strtotime('2015-1-25'),
+                'cate_id' => 1,
+            ),
+            ),
+        );
+        $this->pagedata['lists'] = $data;
+        $this->display('lists.html');
     }
 
     function index( $id, $name )

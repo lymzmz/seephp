@@ -1,0 +1,12 @@
+<script>
+$('form[callback]').bind('submit', function(){
+	var form = $(this);
+	$.post(form.attr('action'), form.serialize(), function(re){
+		var str = form.attr('callback')+'(re)';
+		eval(str);
+	}, 'JSON');
+	return false;
+});
+</script>
+</body>
+</html>

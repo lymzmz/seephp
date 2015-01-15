@@ -5,6 +5,26 @@ class see_app_controller extends see_app_abstract {
     protected $_cache = true;
     protected $pagedata = array();
 
+    public function succ($msg, $url=null, $delay=2, $temp=null)
+    {
+        $data = array(
+                'status' => 1,
+                'info' => $msg,
+                'url' => see_engine_request::url($url),
+            );
+        echo json_encode($data);
+    }
+
+    public function fail($msg, $url=null, $delay=2, $temp=null)
+    {
+        $data = array(
+                'status' => 0,
+                'info' => $msg,
+                'url' => see_engine_request::url($url),
+            );
+        echo json_encode($data);
+    }
+
     public function enableCache()
     {
         return isset($this->_cache) && $this->_cache === false ? false : true;

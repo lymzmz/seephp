@@ -135,7 +135,7 @@ class see_view_view extends see_view_abstract implements see_view_interface {
                 $string = '<?php '.implode(' ', $str).' ?>';
                 break;
             default:
-                $arguments = $this->_parse_arguments( $row_arr[2], 2 );
+                $arguments = $this->_parse_arguments( $row_arr[2], 3 );
                 $string = $this->_parse_plugin( $row_arr[1], $arguments );
         }
 
@@ -203,16 +203,24 @@ class see_view_view extends see_view_abstract implements see_view_interface {
 
     protected function _parse_plugin( $method, $params )
     {
+        /* 标准方法 */
+        if ( function_exists($method) ) {
+            $html = '<?php echo '.$method.'('.implode(', ', $params).'); ?>';
+
+            return $html;
+        }
+
+        /* 自定义方法 */
         $class_name = array(
-                see_engine_kernel::singleApp( $this->_app )->plugin( 'view' ),
-                see_engine_kernel::singleApp( see_engine_config::app() )->plugin( 'view' ),
-                'see_view_parse'
+                see_engine_kernel::singleApp( $this->_app )->plugin( 'view' ), /* 当前访问app */
+                see_engine_kernel::singleApp( see_engine_config::app() )->plugin( 'view' ), /* 基础服务app */
+                'see_view_parse' /* 底层解析 */
             );
         $method = 'parse_'.$method;
         foreach ( $class_name as $class ) {
             if ( !method_exists( $class, $method ) ) continue;
 
-            return call_user_func( array($class, $method), $params );
+            return call_user_func_array( array($class, $method), $params );
         }
 
         return 'unknow function \''.$method.'\'';

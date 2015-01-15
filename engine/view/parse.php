@@ -12,9 +12,9 @@ class see_view_parse {
      *
      * @return string
      */
-    static public function parse_lang( $params )
+    static public function parse_lang( $langeuage )
     {
-        $html = '<?php echo see_engine_kernel::lang('.$params['data'].'); ?>';
+        $html = '<?php echo see_engine_kernel::lang('.$langeuage.'); ?>';
 
         return $html;
     }
@@ -26,9 +26,9 @@ class see_view_parse {
      *
      * @return string
      */
-    static public function parse_url( $params )
+    static public function parse_url( $uri )
     {
-        $html = '<?php echo see_engine_kernel::url('.$params['data'].'); ?>';
+        $html = '<?php echo see_engine_kernel::url('.$uri.'); ?>';
 
         return $html;
     }
