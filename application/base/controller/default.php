@@ -41,16 +41,16 @@ class see_ctl_base_default extends see_app_controller {
     function lists()
     {
         $data = array(
-            '瓜果蔬菜' => array(
+            'gua' => array(
             array(
                 'goods_id' => 1,
-                'name' => '西红柿',
+                'name' => 'tomato',
                 'nums' => 5,
                 'buy_time' => strtotime('2015-1-5'),
                 'end_time' => strtotime('2015-1-25'),
                 'cate_id' => 1,
             ),
-            array(
+            /*array(
                 'goods_id' => 2,
                 'name' => '鸡蛋',
                 'nums' => 20,
@@ -114,7 +114,7 @@ class see_ctl_base_default extends see_app_controller {
                 'buy_time' => strtotime('2015-1-5'),
                 'end_time' => strtotime('2015-1-25'),
                 'cate_id' => 1,
-            ),
+            ),*/
             ),
         );
         $this->pagedata['lists'] = $data;
