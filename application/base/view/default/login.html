@@ -1,28 +1,32 @@
 <{include "header.html"}>
-<div class="container table-bordered" style="margin-top:3%;padding:2% 0px;border-color:#2D6CA2;border-radius:10px;border-width:2px;">
-	<div class="col-sm-12">
-		<form action="<{url 'base/default/login'}>" method="post" class="form-horizontal" role="form" callback="login">
-		<fieldset>
-			<div class="form-group">
-				<label class="col-sm-4 control-label">用户名: </label>
-				<div class="col-sm-4"><{input_text name="username" class="form-control" placeholder="用户名/Email"}></div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-4 control-label">密码: </label>
-				<div class="col-sm-4"><{input_text name="password" class="form-control" placeholder="密码"}></div>
-			</div>
-			<br/>
-			<div class="form-group">
-				<div class="col-sm-6 control-label" style="color:red"></div>
-				<div class="col-sm-4">
-					<input type="button" value="注册" class="btn btn-info"/>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<input type="submit" value="登录" class="btn btn-primary"/>
-				</div>
-			</div>
-		</fieldset>
-		</form>
+<div style="padding:10px;">
+	<div style="">
+		<div style="float:left;"><input type="button" class="btn btn-success" onclick="show_register()" value="注册"/></div>
+		<div style="float:right;"><input type="button" class="btn btn-success" onclick="show_forgetpasswd()" value="忘记密码"/></div>
 	</div>
+	<form action="<{url 'base/default/login'}>" method="post" callback="login">
+	<div id="login" style="border-radius:10px;border:2px solid #2D6CA2;padding:5px;background:white;opacity: 0.9;margin-top:70%;">
+		<div style="margin:10px"><{input_text name="username" class="form-control" placeholder="用户名/Email"}></div>
+		<div style="margin:10px"><{input_text name="password" class="form-control" placeholder="密码"}></div>
+		<div style="margin:10px;text-align:center;"><input type="submit" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;登&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;录&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" class="btn btn-primary"/></div>
+	</div>
+	</form>
+	<form action="<{url 'base/default/register'}>" method="post" callback="register">
+	<div id="register" style="border-radius:10px;border:2px solid #2D6CA2;padding:5px;background:white;opacity: 0.9;display:none;margin-top:50%">
+		<div style="margin:10px"><{input_text name="username" class="form-control" placeholder="用户名"}></div>
+		<div style="margin:10px"><{input_text name="email" class="form-control" placeholder="Email"}></div>
+		<div style="margin:10px"><{input_text name="password" class="form-control" placeholder="密码"}></div>
+		<div style="margin:10px"><{input_text name="password" class="form-control" placeholder="确认密码"}></div>
+		<div style="margin:10px;text-align:center;"><input type="submit" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" class="btn btn-primary"/>　　　<input type="button" class="btn btn-success" onclick="show_login()" value="返回"/></div>
+	</div>
+	</form>
+	<form action="<{url 'base/default/register'}>" method="post" callback="register">
+	<div id="forgetpasswd" style="border-radius:10px;border:2px solid #2D6CA2;padding:5px;background:white;opacity: 0.9;display:none;margin-top:75%">
+		<div style="margin:10px"><{input_text name="email" class="form-control" placeholder="Email"}></div>
+		<div style="margin:10px;text-align:center;"><input type="submit" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;发送邮件&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" class="btn btn-primary"/>　　　<input type="button" class="btn btn-success" onclick="show_login()" value="返回"/></div>
+	</div>
+	</form>
+	<div style="position:fixed;bottom:10px;">　　　　　　@copyright 2015 seephp.com</div>
 </div>
 <div id="message" class="alert alert-warning">
 <{if $error}><{$error}><{else}>ok<{fi}>
@@ -36,8 +40,29 @@ var login = function(re){
 		});
 	} else {
 		$('#message').html(re.info);
-		$('#message').animate({top:"25%"}, 250).delay(2000).animate({top:"-50px"}, 250);
+		$('#message').animate({top:"25%"}, 250).delay(1000).animate({top:"-50px"}, 250);
 	}
+}
+var show_register = function(){
+	$('#forgetpasswd').hide();
+	$('#login').hide();
+	$('#register').show();
+	$('#register').attr('class', '');
+	$('#register').attr('class', 'flipInY animated');
+};
+var show_login = function(){
+	$('#forgetpasswd').hide();
+	$('#register').hide();
+	$('#login').show();
+	$('#login').attr('class', '');
+	$('#login').attr('class', 'flipInY animated');
+};
+var show_forgetpasswd = function(){
+	$('#login').hide();
+	$('#register').hide();
+	$('#forgetpasswd').show();
+	$('#forgetpasswd').attr('class', '');
+	$('#forgetpasswd').attr('class', 'flipInY animated');
 }
 </script>
 <{include "footer.html"}>

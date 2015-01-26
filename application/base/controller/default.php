@@ -20,7 +20,7 @@ class see_ctl_base_default extends see_app_controller {
             $this->display('login.html');
         } else {
             $result = see_engine_kernel::auth()->login( $data['username'], $data['password'] );
-            if ( 1||$result === true ) {
+            if ( $result === true ) {
 
                 $this->succ('登陆成功', 'base/default/lists');
             } else {
