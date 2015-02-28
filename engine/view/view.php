@@ -134,9 +134,13 @@ class see_view_view extends see_view_abstract implements see_view_interface {
                     $str[] = '$' . $this->_parse_var( $key ) . '=' . $this->_parse_var( $val ) . ';';
                 $string = '<?php '.implode(' ', $str).' ?>';
                 break;
+            case 'img':
+                $arguments = $this->_parse_arguments( $row_arr[2], 2 );
+                $string = $this->_parse_plugin( $row_arr[1], $arguments, 2 );
+                break;
             default:
                 $arguments = $this->_parse_arguments( $row_arr[2], 3 );
-                $string = $this->_parse_plugin( $row_arr[1], $arguments );
+                $string = $this->_parse_plugin( $row_arr[1], $arguments, 3 );
         }
 
         return $string;
@@ -201,7 +205,7 @@ class see_view_view extends see_view_abstract implements see_view_interface {
         return $var;
     }
 
-    protected function _parse_plugin( $method, $params )
+    protected function _parse_plugin( $method, $params, $type )
     {
         /* 标准方法 */
         if ( function_exists($method) ) {
@@ -220,7 +224,7 @@ class see_view_view extends see_view_abstract implements see_view_interface {
         foreach ( $class_name as $class ) {
             if ( !method_exists( $class, $method ) ) continue;
 
-            return call_user_func_array( array($class, $method), $params );
+            return $type == 2 ? call_user_func( array($class, $method), $params ) : call_user_func_array( array($class, $method), $params );
         }
 
         return 'unknow function \''.$method.'\'';

@@ -37,9 +37,9 @@ class see_view_parse {
     {
         $host = see_engine_config::load( 'application' )->staticsServer;
         $host = $host ? $host : see_engine_request::host( false );
-        $file = $host.'/statics/images/<?php echo ' . $params['data'] . '; ?>';
+        $file = $host.'/statics/images/<?php echo ' . $params['src'] . '; ?>';
         $html = '<img src="' . $file . '"';
-        unset($params['data']);
+        unset($params['src']);
         foreach ( $params as $key => $val ) $html .= ' ' . $key . '="<?php echo '.$val.'; ?>"';
         $html .= '/>';
 
