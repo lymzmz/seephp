@@ -1,37 +1,32 @@
 <{include "header.html"}>
 <style type="text/css">
-th { font-size:16px; font-weight:bold;text-align:center; }
-.goods_num { cursor:pointer; margin:0 5px; }
+.goods_row { border-bottom:1px solid #dadada;margin-bottom:10px;padding-bottom:10px;overflow:hidden; }
+.goods_row_pad { width:110%; }
+.thumb { width:40%; float:left; height:100px; padding:3px; }
+.thumb img { width:100%; height:100%; }
+.content { width:51%; float:left; height:100px;padding-left:10px; }
+.clear { clear:both; }
+.goods_num { width:100px;margin:0 5px; }
 .goods_name { cursor:pointer; }
 .cate_name { font-size:16px; font-weight:bold; cursor:pointer;text-align:center; }
 .green { background-color:#DFF0D8; }
 .goods { line-height:42px; width:110%;overflow:hidden;position:relative; }
-.remove { width:50px;float:left;color:white;background:red;text-align:center; }
+.remove { width:30px;height:100px;line-height:100px;float:left;color:white;background:red;text-align:center; }
+.jian { width:10px; text-align:center; }
+.jia { width:10px; text-align:center; }
 </style>
-<table class="table table-bordered" style="margin-bottom:0;display:none">
-	<tr class="warning">
-		<th class="col-xs-1">类别</th><th class="col-xs-1">名称</th><th class="col-xs-6">数量</th><th class="col-xs-2">购买日期</th><th class="col-xs-2">保质期</th>
-	</tr>
-</table>
 <{for from=$lists key=$key item=$val}>
-<{assign $height=count($val)*42}>
-<div>
-	<div class="col-xs-1 cate_name" row_num=<{count $val}> style="height:<{$height}>px;line-height:<{$height}>px;padding:0"><{$key}></div>
-	<div class="col-xs-11" style="padding:0;">
-	<{for from=$val key=$k item=$v}>
-		<div style="overflow:hidden">
-			<div class="goods <{if $k%2!=0}>green<{fi}>" goods_id="<{$v.goods_id}>">
-				<div class="goods_name col-xs-1"><{$v.name}></div>
-				<div class="goods_num col-xs-6">
-					<{assign $nums=array_fill(0,$v['nums'],1)}>
-					<{for from=$nums item=$vv}><span class="glyphicon glyphicon-pushpin"></span><{done}>
-				</div>
-				<div class="buy_time col-xs-2"><{date 'Y-m-d' $v.buy_time}></div>
-				<div class="col-xs-2"><{date 'Y-m-d' $v.end_time}></div>
-				<div class="remove">删除</div>
-			</div>
+<div class="goods_row">
+	<div class="goods_row_pad">
+		<div class="thumb"><{img src=$val.thumb}></div>
+		<div class="content">
+					<div class="goods_name"><{$val.name}></div>
+					<div><span class="jian">-</span><span class="goods_num"><{$val.nums}></span><span class="jia">+</span></div>
+					<div class="buy_time">buy time：<{date 'Y-m-d' $val.buy_time}></div>
+					<div class="">expire time：<{date 'Y-m-d' $val.end_time}></div>
 		</div>
-	<{done}>
+		<div class="remove">X</div>
+		<div class="clear"></div>
 	</div>
 </div>
 <{done}>
@@ -52,22 +47,15 @@ $('.cate_name').bind('click', function(){
 	var html = '<div style="overflow:hidden"><div class="goods '+(row_num%2==0?'green':'')+'" goods_id="0"><div class="goods_name col-xs-1"></div><div class="goods_num col-xs-6"></div><div class="buy_time col-xs-2"><{date 'Y-m-d'}></div><div class="col-xs-2"></div><div class="remove">删除</div></div></div>';
 	$(this).next().prepend(html);
 });
-$(document).on('click','.buy_time',function(){
-	if($(this).parent().css('left')=='-100px') {
-		$(this).parent().animate({left:"0"}, 100);
+$(document).on('click','.thumb',function(){
+	if($(this).parent().parent().css('scrollLeft')=='30') {
+		$(this).parent().parent().animate({scrollLeft:"0"}, 100);
 	} else {
-		$(this).parent().animate({left:"-100"}, 100);
+		$(this).parent().parent().animate({scrollLeft:"30"}, 100);
 	}
 });
 $(document).on('click','.remove',function(){
 	var goods = $(this).parent().parent();
-	var cate = goods.parent().prev();
-	var row_num = parseInt(cate.attr('row_num'))-1;
 	goods.slideUp('fast');
-	if(row_num>0) {
-		cate.css('height', row_num*42+'px');
-		cate.css('line-height', row_num*42+'px');
-	}
-	cate.attr('row_num', row_num);
 });
 </script>

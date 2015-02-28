@@ -18,7 +18,6 @@ class see_ctl_base_member extends see_app_controller {
     function lists()
     {
         $data = array(
-            'gua' => array(
             array(
                 'goods_id' => 1,
                 'name' => 'tomato',
@@ -26,10 +25,12 @@ class see_ctl_base_member extends see_app_controller {
                 'buy_time' => strtotime('2015-1-5'),
                 'end_time' => strtotime('2015-1-25'),
                 'cate_id' => 1,
+                'cate_name' => 'abcd',
+                'thumb' => 'logo.gif',
             ),
-            /*array(
+            array(
                 'goods_id' => 2,
-                'name' => '鸡蛋',
+                'name' => 'egg',
                 'nums' => 20,
                 'buy_time' => strtotime('2015-1-5'),
                 'end_time' => strtotime('2015-1-25'),
@@ -37,13 +38,13 @@ class see_ctl_base_member extends see_app_controller {
             ),
             array(
                 'goods_id' => 3,
-                'name' => '西葫芦',
+                'name' => 'hulu',
                 'nums' => 5,
                 'buy_time' => strtotime('2015-1-5'),
                 'end_time' => strtotime('2015-1-25'),
                 'cate_id' => 1,
             ),
-            array(
+            /*array(
                 'name' => '黄瓜',
                 'nums' => 5,
                 'buy_time' => strtotime('2015-1-5'),
@@ -92,7 +93,6 @@ class see_ctl_base_member extends see_app_controller {
                 'end_time' => strtotime('2015-1-25'),
                 'cate_id' => 1,
             ),*/
-            ),
         );
         $this->pagedata['lists'] = $data;
         $this->display('lists.html');

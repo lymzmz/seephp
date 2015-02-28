@@ -7,6 +7,9 @@ $('form[callback]').bind('submit', function(){
 	}, 'JSON');
 	return false;
 });
+$('#nav_right').bind('click', function(){
+	$('#nav_right_menu').slideToggle('fast');
+});
 </script>
 </body>
 </html>
