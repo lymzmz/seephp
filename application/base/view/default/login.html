@@ -34,6 +34,7 @@
 <script>
 var login = function(re){
 	if(re.status==1) {
+		location.href = re.url;return;
 		$.get(re.url, function(re2){
 		//	$('body').fadeOut().delay(250).fadeIn();
 			$('body').html(re2);

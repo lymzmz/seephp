@@ -8,7 +8,7 @@ th { font-size:16px; font-weight:bold;text-align:center; }
 .goods { line-height:42px; width:110%;overflow:hidden;position:relative; }
 .remove { width:50px;float:left;color:white;background:red;text-align:center; }
 </style>
-<table class="table table-bordered" style="margin-bottom:0">
+<table class="table table-bordered" style="margin-bottom:0;display:none">
 	<tr class="warning">
 		<th class="col-xs-1">类别</th><th class="col-xs-1">名称</th><th class="col-xs-6">数量</th><th class="col-xs-2">购买日期</th><th class="col-xs-2">保质期</th>
 	</tr>
@@ -49,7 +49,7 @@ $('.cate_name').bind('click', function(){
 	$(this).css('height', row_num*42+'px');
 	$(this).css('line-height', row_num*42+'px');
 	$(this).attr('row_num', row_num);
-	var html = '<div style="overflow:hidden"><div class="goods '+(row_num%2!=0?'green':'')+'" goods_id="0"><div class="goods_name col-xs-1"></div><div class="goods_num col-xs-6"></div><div class="buy_time col-xs-2"><{date 'Y-m-d'}></div><div class="col-xs-2"></div><div class="remove">删除</div></div></div>';
+	var html = '<div style="overflow:hidden"><div class="goods '+(row_num%2==0?'green':'')+'" goods_id="0"><div class="goods_name col-xs-1"></div><div class="goods_num col-xs-6"></div><div class="buy_time col-xs-2"><{date 'Y-m-d'}></div><div class="col-xs-2"></div><div class="remove">删除</div></div></div>';
 	$(this).next().prepend(html);
 });
 $(document).on('click','.buy_time',function(){
@@ -63,7 +63,7 @@ $(document).on('click','.remove',function(){
 	var goods = $(this).parent().parent();
 	var cate = goods.parent().prev();
 	var row_num = parseInt(cate.attr('row_num'))-1;
-	goods.remove();
+	goods.slideUp('fast');
 	if(row_num>0) {
 		cate.css('height', row_num*42+'px');
 		cate.css('line-height', row_num*42+'px');
