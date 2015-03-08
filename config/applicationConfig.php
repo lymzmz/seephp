@@ -11,7 +11,7 @@ return array(
     ),
     'dbServer' => 'mysql', /* 数据库 */
     'view' => array(
-            'template' => 'default', /* 默认模版 */
+            'template' => 'jingle', /* 默认模版 */
             'language' => 'zh-cn' /* 语言包 */
         ),
     'defaultEntry' => 'base/default/welcome', /* 默认入口 */

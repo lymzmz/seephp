@@ -3,7 +3,7 @@
 class see_ctl_base_default extends see_app_controller {
 
     function authGroup() {
-        return array('guest');
+        return array('guest','member');
     }
 
     function login()
@@ -27,7 +27,16 @@ class see_ctl_base_default extends see_app_controller {
 
     function welcome()
     {
-        $this->display( 'index.html' );
+        $this->display( 'welcome.html' );
+    }
+
+    function navMenu(){
+        $menu = array(
+                'aaaaaaaaaa','bbbbbbbb','cccccccc'
+            );
+        echo json_encode($menu);
+        return;
+        $this->display('nav_menu.html');
     }
 
 }

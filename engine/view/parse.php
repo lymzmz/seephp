@@ -28,8 +28,11 @@ class see_view_parse {
      */
     static public function parse_url( $uri )
     {
-        $html = '<?php echo see_engine_kernel::url('.$uri.'); ?>';
-
+        if ( $uri == 'statics' ) {
+            $html = '<?php echo see_engine_request::host(false); ?>/statics';
+        } else {
+            $html = '<?php echo see_engine_kernel::url('.$uri.'); ?>';
+        }
         return $html;
     }
 
