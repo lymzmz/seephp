@@ -1,6 +1,6 @@
 <?php
 
-class mdl_base_members extends app_model {
+class see_mdl_base_members extends see_app_model {
 
     
 

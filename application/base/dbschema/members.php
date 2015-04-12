@@ -4,7 +4,8 @@ return array(
     'comment' => see_engine_kernel::lang('会员表'),
     'columns' => array(
         'member_id' => array(
-            'type' => 'mediumint (8) unsigned'
+            'type' => 'mediumint (8) unsigned',
+            'extra' => 'auto_increment',
         ),
         'username' => array(
             'type' => 'varchar(50)',
