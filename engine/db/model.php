@@ -9,8 +9,8 @@ class see_db_model extends see_db_abstract {
     final public function __construct( $params=null, $table_name='' )
     {
         if ( empty($this->_table_name) ) {
-            if ( !$table_name ) $table_name = __CLASS__;
-            $this->_table_name = substr($table_name, 4);
+            if ( !$table_name ) $table_name = get_class($this);
+            $this->_table_name = substr($table_name, 8);
         }
         $this->_dbServer = see_engine_kernel::single()->database();
     }
@@ -43,18 +43,21 @@ class see_db_model extends see_db_abstract {
         return $this;
     }
 
-    public function findList( $columns='*', $filter=null, $from=null, $order='', $group='', $offset=0, $limit=-1 )
+    public function findList( $columns='*', $filter=null, $order='', $group='', $offset=0, $limit=-1 )
     {
-        if ( is_object($this->_builder) ) {
-            $columns = implode(',', $this->_builder->select);
-            $from = implode(',', $this->_builder->tables);
-            $filter = implode(' and ', $this->_builder->filter);
-            $group = $this->_builder->group;
-            $order = $this->_builder->order;
-            $limit = $this->_builder->limit;
-            $offset = ($this->_builder->page - 1) * $this->_builder->limit;
-            $this->_builder = null;
-        }
+        $builder = is_object($this->_builder)
+                        ? $this->_builder
+                        : see_engine_database::builder( $this )->resolver( $columns, $filter, $order, $group, $offset, $limit );
+
+        $columns = implode(',', $builder->select);
+        $from = $builder->tables;
+        $filter = implode(' and ', $builder->filter);
+        $group = $builder->group;
+        $order = $builder->order;
+        $limit = $builder->limit;
+        $offset = $builder->offset;
+        $this->_builder = null;
+
         $sql = 'select ' . $columns;
         $sql .= ' from ' . $from;
         $sql .= ' where '. ( $filter ? $filter : '1' );
@@ -65,17 +68,17 @@ class see_db_model extends see_db_abstract {
         return $this->_dbServer->select( $sql );
     }
 
-    public function findOne( $columns='*', $filter=null, $from=null, $order='', $group='' )
+    public function findOne( $columns='*', $filter=null, $order='', $group='' )
     {
-        $record = $this->findList( $columns, $filter, $from, $order, $group, 0, 1 );
+        $record = $this->findList( $columns, $filter, $order, $group, 0, 1 );
         if ( empty($record) ) return false;
 
         return array_shift($record);
     }
 
-    public function findResult(  $columns='*', $filter=null, $from=null, $order='', $group='' )
+    public function findResult(  $columns='*', $filter=null, $order='', $group='' )
     {
-        $record = $this->findOne( $columns, $filter, $from, $order, $group );
+        $record = $this->findOne( $columns, $filter, $order, $group );
         if ( empty($record) ) return false;
 
         return array_shift($record);
@@ -130,7 +133,7 @@ class see_db_model extends see_db_abstract {
             }
             $sql .= '(' . implode(',', $columns_value) . '),';
         }
-        $sql = substr($sql, 0, -1);
+        $sql = substr($sql, 0, -1);error_log($sql,3,'e:/a.log');
         if ( false !== ($result = $this->_dbServer->exec( $sql )) ) $result = $this->_dbServer->insertId();
 
         return $result;

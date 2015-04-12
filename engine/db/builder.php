@@ -30,7 +30,7 @@ class see_db_builder extends see_db_abstract {
         return $this->toArray();
     }
 
-    public function resolver( $columns='*', $filter=null, $order='', $group='', $page=1, $limit=100 )
+    public function resolver( $columns='*', $filter=null, $order='', $group='', $offset=1, $limit=100 )
     {
         $columns = self::_parse_columns( $columns, $this->_model->getTableName() );
         $filter = self::_parse_filter( $filter, $this->_model->getTableName() );
@@ -41,7 +41,7 @@ class see_db_builder extends see_db_abstract {
                 'update' => $columns['update'],
                 'tables' => $tables,
                 'filter' => $filter['filter'],
-                'page' => (int)$page,
+                'offset' => (int)$offset,
                 'limit' => (int)$limit,
                 'order' =>  self::_parse_order( $order, $this->_model->getTableName() ),
                 'group' =>  self::_parse_group( $group, $this->_model->getTableName() )
@@ -100,9 +100,10 @@ class see_db_builder extends see_db_abstract {
             strpos($key, '.') && ($key = explode('.', $key)) && ($foreignTableName = $key[0]) && ($key = $key[1]);
             $tableName = $foreignTableName ? $foreignTableName : $mainTableName;
             strpos($key, '|') && ($key = explode('|', $key)) && ($sign = $key[1]) && ($key = $key[0]);
-            $key = $tableName . '.' . $key . '';
+            $key = $tableName . '.`' . $key . '`';
             $sign = $sign ? $sign : '=';
-            $where[] = is_array($val) ? $key . ' in (' . implode(',', $val) . ')' : $key . $sign . $val;
+            //todo 根据字段类型判断val是否需要添加引号
+            $where[] = is_array($val) ? $key . ' in (' . implode(',', $val) . ')' : $key . $sign . '"'.$val.'"';
             !in_array($tableName, $tables) && ($tables[] = $tableName);//todo 多表联合删除
         }
 
@@ -150,8 +151,8 @@ class see_db_builder extends see_db_abstract {
         if ( is_string($order) ) $order = explode(',', $order);
         foreach ( $order as $key => $val ) {
             $tb = '';
-            is_numeric($key) && ($val = explode(' ', $val)) && ($key = $val[0] && $val = $val[1]);
-            strpos($key, '.') && ($key = explode('.', $key)) && ($tb = $key[0] && $key = $key[1]);
+            is_numeric($key) && ($val = explode(' ', $val)) && ($key = $val[0]) && ($val = $val[1]);
+            strpos($key, '.') && ($key = explode('.', $key)) && ($tb = $key[0]) && ($key = $key[1]);
             $key = $tb ? $tb . '.' . $key : $tableName . '.' . $key;
             $return[] = $key . ' ' . $val;
         }
