@@ -71,6 +71,27 @@ function testbbb(){$this->fail('hijklmn');return;
     }
 
     /**
+     * 删除商品
+     */
+    function removeGoods()
+    {
+        $data = see_engine_kernel::request()->post;
+
+        $data['member_id'] = see_engine_kernel::user()->member_id;
+
+        try {
+            $result = see_engine_kernel::business('orders')->remove( $data );
+            if ( $result === false ) {
+                $this->fail('移除失败，请稍后重试');
+            } else {
+                $this->succ('移除成功');
+            }
+        } catch ( Exception $event ) {
+            $this->fail($event->getMessage());
+        }
+    }
+
+    /**
      * 新品列表
      */
     function goodsList()
@@ -82,8 +103,10 @@ function testbbb(){$this->fail('hijklmn');return;
         $filter = array(
             'member_id' => see_engine_kernel::user()->member_id,
             'order_id|>' => $data['cursor'],
+            'status' => 1,
         );
-        $order = 'create_time desc';
+        !empty($data['cate_id']) && ($filter['cate_id'] = $data['cate_id']);
+        $order = 'create_time asc';
         $records = see_engine_kernel::model('orders')->findList('*', $filter, $order, '', $offset, $limit);
         if ( empty($records) ) {
             $this->fail('已是最新');
@@ -98,6 +121,8 @@ function testbbb(){$this->fail('hijklmn');return;
             $thumbnail = $val['thumbnail'];
             $price = $val['price'];
             $name = $val['name'];
+            $order_id = $val['order_id'];
+
             $info[$key]['html'] = <<<EOT
                     <li class="mui-table-view-cell mui-media">
                         <div class="mui-slider-left mui-disabled">
@@ -106,7 +131,7 @@ function testbbb(){$this->fail('hijklmn');return;
                         <div class="mui-slider-right mui-disabled">
                             <button class="mui-btn mui-btn-red">-</button>
                         </div>
-                        <a href="javascript:;" class="mui-slider-handle">
+                        <a href="javascript:;" class="mui-slider-handle" oid="$order_id">
                             <img class="mui-media-object mui-pull-left" src="$thumbnail"  />
                             <div class="mui-media-body">
                                 <label>$name</label>
@@ -122,6 +147,114 @@ EOT;
         }
 
         $this->succ($info);
+    }
+
+    /**
+     * 分类列表
+     */
+    function catesList()
+    {
+        $data = see_engine_kernel::request()->post;
+
+        $is_simple =  isset($data['simple']) && $data['simple'] == 1 ? true : false;
+        $is_all =  isset($data['all']) && $data['all'] == 1 ? true : false;
+
+        $filter = array(
+            'member_id' => see_engine_kernel::user()->member_id,
+        );
+        $order = 'is_order asc';
+        $records = see_engine_kernel::model('cates')->findList('*', $filter, $order);
+        if ( empty($records) ) {
+            $this->fail('无数据');
+
+            return;
+        }
+
+        $html = $is_all && $is_simple ? '<li class="mui-table-view-cell" onclick="setCate(this)"><a href="#" cid="0">全部</a></li>' : '';
+        foreach ( $records as $key => $val ) {
+            $cate_name = $val['cate_name'];
+            $cate_id = $val['cate_id'];
+
+            if ( $is_simple ) {
+                $html .= '<li class="mui-table-view-cell" onclick="setCate(this)"><a href="#" cid="'.$cate_id.'">'.$cate_name.'</a></li>';
+            } else {
+                $html .= <<<EOT
+                    <li class="mui-table-view-cell mui-media">
+                        <div class="mui-slider-left mui-disabled">
+                            <button class="mui-btn mui-btn-red">-</button>
+                        </div>
+                        <a href="javascript:;" class="mui-slider-handle" cid="$cate_id">
+                            <img class="mui-media-object mui-pull-left" src="img/login.jpg"  />
+                            <div class="mui-media-body">
+                                <label>$cate_name</label>
+                                <p class="mui-ellipsis">a</p>
+                            </div>
+                        </a>
+                    </li>
+EOT;
+            }
+        }
+
+        $this->succ($html);
+    }
+
+    /**
+     * 新增分类
+     */
+    function addCate()
+    {
+        $data = see_engine_kernel::request()->post;
+
+        $data['member_id'] = see_engine_kernel::user()->member_id;
+
+        try {
+            $result = see_engine_kernel::business('cates')->add( $data );
+            if ( $result === false ) {
+                $this->fail('添加失败，请稍后重试');
+            } else {
+                $cate_id = $result;
+                $cate_name = $data['name'];
+
+                $html = <<<EOT
+                    <li class="mui-table-view-cell mui-media fadeInDown animated">
+                        <div class="mui-slider-left mui-disabled">
+                            <button class="mui-btn mui-btn-red">-</button>
+                        </div>
+                        <a href="javascript:;" class="mui-slider-handle" cid="$cate_id">
+                            <img class="mui-media-object mui-pull-left" src="img/login.jpg"  />
+                            <div class="mui-media-body">
+                                <label>$cate_name</label>
+                                <p class="mui-ellipsis">a</p>
+                            </div>
+                        </a>
+                    </li>
+EOT;
+                $this->succ($html);
+            }
+        } catch ( Exception $event ) {
+            $this->fail($event->getMessage());
+        }
+    }
+
+    /**
+     * 删除分类
+     */
+    function removeCate()
+    {
+        $data = see_engine_kernel::request()->post;
+
+        $data['member_id'] = see_engine_kernel::user()->member_id;
+
+        try {
+            $result = see_engine_kernel::business('cates')->remove( $data );
+            if ( $result === false ) {
+                $this->fail('移除失败，请稍后重试');
+            } else {
+                $this->succ('移除成功');
+            }
+        } catch ( Exception $event ) {
+            $this->fail($event->getMessage());
+        }
     }
 
 }

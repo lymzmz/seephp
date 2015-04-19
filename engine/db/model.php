@@ -64,7 +64,7 @@ class see_db_model extends see_db_abstract {
         $sql .= $group ? ' group by '.$group : '';
         $sql .= $order ? ' order by '.$order : '';
         $sql .= $limit > 0 ? ' limit '.$offset.','.$limit : '';
-
+error_log(var_export($sql,1),3,'e:/a.log');
         return $this->_dbServer->select( $sql );
     }
 
@@ -89,7 +89,7 @@ class see_db_model extends see_db_abstract {
      */
     public function delete( $filter=null, $many=false )
     {
-        $many === false && ($filter = array($filter));
+        //$many === false && ($filter = array($filter));
         if ( $many ) {
             $builder = see_engine_database::builder( $this );
             foreach ( $filter as $val ) {
@@ -97,7 +97,8 @@ class see_db_model extends see_db_abstract {
                 $where[] = implode(' and ', $fil->filter);
             }
         } else {
-            $where[] = see_engine_database::builder( $this )->resolver( null, $filter );
+            $builder = see_engine_database::builder( $this )->resolver( null, $filter );
+            $where[] = implode(' and ', $builder->filter);
         }
         $sql = 'delete from '.$this->getTableName().' where (' . implode(' or ', $where) . ')';
         $result = $this->_dbServer->exec( $sql );
@@ -133,7 +134,7 @@ class see_db_model extends see_db_abstract {
             }
             $sql .= '(' . implode(',', $columns_value) . '),';
         }
-        $sql = substr($sql, 0, -1);error_log($sql,3,'e:/a.log');
+        $sql = substr($sql, 0, -1);
         if ( false !== ($result = $this->_dbServer->exec( $sql )) ) $result = $this->_dbServer->insertId();
 
         return $result;
@@ -150,6 +151,7 @@ class see_db_model extends see_db_abstract {
         }
         $sql .= implode(',', $columns_value);
         $sql .= ' where ' . implode(' and ', $builder->filter);
+
         $result = $this->_dbServer->exec( $sql );
 
         return $result;

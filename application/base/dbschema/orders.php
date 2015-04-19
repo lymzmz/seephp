@@ -11,6 +11,10 @@ return array(
             'fkey' => 'base_members.member_id',
             'label' => see_engine_kernel::lang('会员用户名')
         ),
+        'cate_id' => array(
+            'fkey' => 'base_cates.cate_id',
+            'label' => see_engine_kernel::lang('分类名')
+        ),
         'name' => array(
             'type' => 'varchar(100)',
             'label' => see_engine_kernel::lang('名称')
@@ -38,6 +42,11 @@ return array(
         'thumbnail' => array(
             'type' => 'varchar(100)',
             'label' => see_engine_kernel::lang('缩略图')
+        ),
+         'create_time' => array(
+            'type' => 'int(10)',
+            'alias' => 'date',
+            'label' => see_engine_kernel::lang('创建时间')
         ),
         'memo' => array(
             'type' => 'varchar(200)',

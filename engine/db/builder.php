@@ -74,7 +74,7 @@ class see_db_builder extends see_db_abstract {
             $tableName = $foreignTableName ? $foreignTableName : $mainTableName;
             $key = $tableName . '.' . $key . '';
             $select[] = $key;
-            $val && ($update[$key] = $val);
+            $update[$key] = $val;
             !in_array($tableName, $tables) && ($tables[] = $tableName);
         }
 
@@ -105,6 +105,8 @@ class see_db_builder extends see_db_abstract {
             //todo 根据字段类型判断val是否需要添加引号
             $where[] = is_array($val) ? $key . ' in (' . implode(',', $val) . ')' : $key . $sign . '"'.$val.'"';
             !in_array($tableName, $tables) && ($tables[] = $tableName);//todo 多表联合删除
+            //变量还原
+            $sign = null;
         }
 
         return array('filter' => $where ? $where : 1, 'tables' => $tables);
