@@ -69,7 +69,7 @@ class see_engine_request {
      */
     static public function suffix()
     {
-        return self::mapper()->sys[-1];
+        return self::mapper()->guide[2];
     }
 
     /**
@@ -108,7 +108,7 @@ class see_engine_request {
         if ( empty(self::$_info) ) {
             self::_mapper();
         }
-echo '<pre>';print_r(self::$_info);var_dump(self::$_info);echo '</pre>';exit;
+
         return empty(self::$_info) ? false : self::$_info;
     }
 
@@ -130,22 +130,15 @@ echo '<pre>';print_r(self::$_info);var_dump(self::$_info);echo '</pre>';exit;
             $info['sys'][] = array_shift($uri);//app
             $info['sys'][] = array_shift($uri);//ctl
             $info['sys'][] = array_shift($uri);//act
-            if ( empty($uri) ) {
-                $suffix = substr($info['sys'][2], stripos($info['sys'][2], '.'));
-                $info['sys'][-1] = $suffix;
-            } else {
-                foreach ( $uri as $key => $val ) {
-                    if ( $key % 2 )
-                        $p_v = $val;
-                    else
-                        $p_k = $val;
-                    if ( isset($p_v) ) {
-                        $info['get'][$p_k] = $p_v;
-                        unset($p_v);
-                    }
+            foreach ( $uri as $key => $val ) {
+                if ( $key % 2 )
+                    $p_v = $val;
+                else
+                    $p_k = $val;
+                if ( isset($p_v) ) {
+                    $info['get'][$p_k] = $p_v;
+                    unset($p_v);
                 }
-                $suffix = substr($val, stripos($val, '.')); //此处的$val肯定是get的最后一个参数
-                $info['sys'][-1] = $suffix;
             }
         } else {
             $info['sys'][] = $request['app'];
@@ -153,7 +146,6 @@ echo '<pre>';print_r(self::$_info);var_dump(self::$_info);echo '</pre>';exit;
             $info['sys'][] = $request['act'];
             $info['get'] = $request;
         }
-        ksort($info['sys']);
 
         return $info;
     }
