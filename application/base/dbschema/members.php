@@ -35,3 +35,17 @@ return array(
     'engine' => 'innodb',
     'version' => 1.0
 );
+
+/**
+
+create table base_members (
+    member_id mediumint(8) unsigned not null auto_increment,
+    username varchar(50) not null comment '用户名',
+    password varchar(32) not null comment '密码',
+    create_time int(10) unsigned not null default 0 comment '创建时间',
+    primary key (member_id),
+    index idx_userpass (username, password),
+    index idx_user (username)
+) engine = myisam default charset = utf8;
+
+*/

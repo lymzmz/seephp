@@ -3,19 +3,19 @@
 return array(
 
     'master' => array(
-            'host' => 'localhost',
-            'username' => 'root',
-            'password' => 'root',
-            'port' => 3306,
-            'name' => 'new'
+            'host' => SAE_MYSQL_HOST_M,
+            'username' => SAE_MYSQL_USER,
+            'password' => SAE_MYSQL_PASS,
+            'port' => SAE_MYSQL_PORT,
+            'name' => SAE_MYSQL_DB
         ),
     'slave' => array(
             array(
-                'host' => 'localhost',
-                'username' => 'root',
-                'password' => 'root',
-                'port' => 3306,
-                'name' => 'new'
+                'host' => SAE_MYSQL_HOST_S,
+                'username' => SAE_MYSQL_USER,
+                'password' => SAE_MYSQL_PASS,
+                'port' => SAE_MYSQL_PORT,
+                'name' => SAE_MYSQL_DB
             )
         ),
     'cache' => false,
