@@ -1,8 +1,4 @@
-<<<<<<< HEAD
- b
-=======
- a
->>>>>>> mytestabc
+ab
 
 /*
             //C create
