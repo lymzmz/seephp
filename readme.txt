@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 abcdefg
 1234567
-=======
-abcdefg
-123456
->>>>>>> iss1002
 /*
             //C create
         $colle = kernel::singleApp('base')->collection('orders');
