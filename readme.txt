@@ -1,5 +1,5 @@
 abcde
-12345
+123456
 /*
             //C create
         $colle = kernel::singleApp('base')->collection('orders');
