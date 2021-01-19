@@ -2,6 +2,35 @@
 
 class see_ctl_base_member extends see_app_controller {
 
+    public function index()
+    {
+        $this->display('index.html');
+    }
+
+    public function order()
+    {
+        $this->display('order.html');
+    }
+
+    public function balance()
+    {
+        $this->display('balance.html');
+    }
+
+    public function cps()
+    {
+        $this->display('cps.html');
+    }
+
+
+
+
+
+
+
+
+
+
     public function authGroup()
     {
         return array('member');

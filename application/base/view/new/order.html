@@ -1,0 +1,38 @@
+<style type="text/css">
+	a {color:black; text-decoration:none;}
+</style>
+
+<form method="post" action="<{url 'base/member/doOrder'}>">
+	<table style="border:0;width:100%;">
+		<tr>
+			<th style="padding:10px;text-align:right;widht:20%;">预定日期</th>
+			<td style="padding:10px;text-align:left;">从 <input type="text" name="order_date_start" /> 到 <input type="text" name="order_date_end" /></td>
+		</tr>
+		<tr>
+			<th style="padding:10px;text-align:right;widht:20%;">预订人姓名</th>
+			<td style="padding:10px;text-align:left;"><input type="text" name="order_contact_name" /></td>
+		</tr>
+		<tr>
+			<th style="padding:10px;text-align:right;widht:20%;">预订人证件类型</th>
+			<td style="padding:10px;text-align:left;">身份证</td>
+		</tr>
+		<tr>
+			<th style="padding:10px;text-align:right;widht:20%;">预订人证件号码</th>
+			<td style="padding:10px;text-align:left;"><input type="text" name="order_contact_no" style="width:350px;" /></td>
+		</tr>
+		<tr>
+			<td colspan=2 style="text-align:center;padding:50px;">
+				<input type="button" id="btn-back" value=" 返 回 " style="margin-right:100px;" /><input type="button" id="btn-submit" value=" 确 认 " />
+			</td>
+		</tr>
+	</table>
+</form>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script>
+$(function(){
+	$('#btn-back').bind('click', function(){
+		location.href = '<{url 'base/member/index'}>';
+	});
+});
+</script>
