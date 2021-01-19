@@ -22,6 +22,12 @@ class see_ctl_base_member extends see_app_controller {
         $this->display('cps.html');
     }
 
+    public function rebate()
+    {
+        $this->display('rebate.html');
+    }
+
+
 
 
 
