@@ -1,5 +1,4 @@
-abcdefg
-1234567
+
 /*
             //C create
         $colle = kernel::singleApp('base')->collection('orders');
@@ -12,10 +11,10 @@ abcdefg
             //U update
         $record = kernel::singleApp('base')->collection('orders')->record( $data );
         $record->order_id = $order_id;
-        $record->memo .= '__×ö¹ıÒ»´ÎĞŞ¸Ä';
+        $record->memo .= '__åšè¿‡ä¸€æ¬¡ä¿®æ”¹';
         kernel::singleApp('base')->collection('orders')->up( $record );
 
-        //kernel::app('base')->single()->model('orders')->update( array('memo' => 'ÓÖÒ»´ÎĞŞ¸Ä'), array('order_id' => 1) );
+        //kernel::app('base')->single()->model('orders')->update( array('memo' => 'åˆä¸€æ¬¡ä¿®æ”¹'), array('order_id' => 1) );
             //U end
 
             //D delete
