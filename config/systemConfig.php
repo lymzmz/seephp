@@ -6,7 +6,7 @@ return array(
     'url' => 'pathinfo',
     'urlSep' => '/',
     'kvServer' => array(
-        'engine' => 'kvdb',
+        'engine' => 'secache',
         'file' => ROOT_DIR.'/cache/system.db'
     )
 

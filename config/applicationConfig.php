@@ -6,7 +6,7 @@
 return array(
 
     'kvServer' => array( /* KV存储 */
-        'engine' => 'kvdb',
+        'engine' => 'secache',
         'file' => ROOT_DIR.'/cache/system.db'
     ),
     'dbServer' => 'mysql', /* 数据库 */
