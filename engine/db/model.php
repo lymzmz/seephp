@@ -64,7 +64,7 @@ class see_db_model extends see_db_abstract {
         $sql .= $group ? ' group by '.$group : '';
         $sql .= $order ? ' order by '.$order : '';
         $sql .= $limit > 0 ? ' limit '.$offset.','.$limit : '';
-error_log(var_export($sql,1),3,'e:/a.log');
+
         return $this->_dbServer->select( $sql );
     }
 

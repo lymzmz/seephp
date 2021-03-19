@@ -30,9 +30,11 @@ class see_db_mysql extends see_db_mysqlBase {
 
     public function __destruct()
     {
+        return;
+
         if ( !is_array(self::$_handles) ) return;
         foreach ( self::$_handles as $val )
-            is_object($val) && mysql_close($val);
+            is_object($val) && mysqli_close($val);
     }
 
     protected function _query( $sql )
@@ -43,9 +45,9 @@ class see_db_mysql extends see_db_mysqlBase {
             $this->_config = $this->_deploy->master;
         }
         $ident = self::_mk_ident( $this->_config );
-        $this->_handle = is_resource(self::$_handles[$ident]) ? self::$_handles[$ident] : null;
+        $this->_handle = is_object(self::$_handles[$ident]) ? self::$_handles[$ident] : null;
         $resource = parent::_query( $sql );
-        if ( !is_resource(self::$_handles[$ident]) ) {
+        if ( !is_object(self::$_handles[$ident]) ) {
             self::$_handles[$ident] = $this->_handle;
         }
 
@@ -85,7 +87,7 @@ class see_db_mysql extends see_db_mysqlBase {
 
     public function quote( $string )
     {
-        return '\''.mysql_escape_string($string).'\'';
+        return '\''.addslashes($string).'\'';
     }
 
     static private function _mk_ident( $c )
@@ -233,7 +235,7 @@ class see_db_mysql extends see_db_mysqlBase {
         shuffle($cluster);
         foreach ( $cluster as $key => $val ) {
             $ident = self::_mk_ident($val);
-            if ( !is_resource(self::$_handles[$ident]) ) {
+            if ( !is_object(self::$_handles[$ident]) ) {
                 try {
                     $this->_connect( $val, false );
                     self::$_handles[$ident] = $this->_handle;

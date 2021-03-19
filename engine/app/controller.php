@@ -50,6 +50,7 @@ class see_app_controller extends see_app_abstract {
 
     public function redirect( $url )
     {
+        substr($url, 0, 7) != 'http://' and $url = see_engine_request::url($url);
         header( 'Location:' . $url );
         DEBUG && DEBUG('<script>location.href="'.$url.'";</script>');
 

@@ -318,7 +318,7 @@ class see_engine_kernel {
 
     static public function app( $app_str )
     {
-        self::$_cur_app = $app;
+        self::$_cur_app = $app_str;
         if ( !isset(self::$_instance) ) {
             $class_name = __CLASS__;
             self::$_instance = new $class_name;
